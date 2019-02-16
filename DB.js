@@ -8,7 +8,7 @@ var con = mysql.createConnection({
   });
   
   console.log("I am Executing");
-  
+  //ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'Gmail@123';
   con.connect(function(err,db) {
       console.log("Connection Called");
     if (err) console.log(err);
