@@ -12,4 +12,8 @@ router.get('/product', product_controller);
 router.get('/user', user_controller);
 
 router.get('/category',category_controller.GetCategory);
+router.post('/category',category_controller.AddProduct);
+router.put('/category',category_controller.EditProduct);
+router.delete('/category',category_controller)
+
 module.exports = router;
