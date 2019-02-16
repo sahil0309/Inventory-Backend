@@ -46,8 +46,8 @@ module.exports.AddCategory=(req,res)=>{
         console.log(req.body);
         let categoryName = req.body.categoryName;
         console.log(categoryName);
-        let userId = req.body.userId;
-        var sql = `call AddCategory('${categoryName}',${userId})`;
+        let createdBy =1;
+        var sql = `call AddCategory('${categoryName}',${createdBy})`;
         db.query(sql,(err, result) =>{
           if (err) {
               console.log(err);
@@ -68,12 +68,11 @@ module.exports.EditCategory=(req,res)=>{
     try{
         console.log(req.body);
         let categoryId = req.body.categoryId;
-        let categortyName = req.body.categortyName;
+        let categoryName = req.body.categoryName;
         let reason =null;
         let updatedBy=1;
         console.log(categoryName);
-        let userId = req.body.userId;
-        var sql = `call EditCategory(${categoryId},'${categortyName},'${reason}',${updatedBy})`;
+        var sql = `call EditCategory(${categoryId},'${categoryName}',${reason},${updatedBy})`;
         db.query(sql,(err, result) =>{
           if (err) {
               console.log(err);
