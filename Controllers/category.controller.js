@@ -18,7 +18,30 @@ module.exports.GetCategory = function (req, res) {
   }
 }
 
-module.exports.AddProduct=(req,res)=>{
+module.exports.GetCategoryById=(req,res)=>{
+    try{
+      
+        let categoryID = req.params.id;
+        console.log('Params',req.params);
+        var sql = `call GetCategoryById(${categoryID})`;
+        db.query(sql,(err, result) =>{
+          if (err) {
+              console.log(err);
+            res.status(400).send('Failure Hogya Bawa');
+          }
+          else {
+              console.log(result);
+            res.status(200).json(result[0][0]);
+          }
+        })
+    }
+    catch(e){
+        res.send(400).send('Error');
+    }
+}
+
+
+module.exports.AddCategory=(req,res)=>{
     try{
         console.log(req.body);
         let categoryName = req.body.categoryName;
@@ -32,7 +55,7 @@ module.exports.AddProduct=(req,res)=>{
           }
           else {
               console.log(result);
-            res.status(200).json(result[0]);
+            res.status(200).json(result[0][0]);
           }
         })
     }
@@ -41,12 +64,12 @@ module.exports.AddProduct=(req,res)=>{
     }
 }
 
-module.exports.EditProduct=(req,res)=>{
+module.exports.EditCategory=(req,res)=>{
     try{
         console.log(req.body);
         let categoryId = req.body.categoryId;
         let categortyName = req.body.categortyName;
-        let reason =req.body.reason;
+        let reason =null;
         let updatedBy=1;
         console.log(categoryName);
         let userId = req.body.userId;
@@ -58,7 +81,7 @@ module.exports.EditProduct=(req,res)=>{
           }
           else {
               console.log(result);
-            res.status(200).json(result[0]);
+            res.status(200).json(result[0][0]);
           }
         })
     }
