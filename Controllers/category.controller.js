@@ -89,3 +89,26 @@ module.exports.EditCategory=(req,res)=>{
     }
 }
 
+module.exports.DeleteCategory=(req,res)=>{
+  try{
+    console.log(req.body);
+    let categoryId = req.body.categoryId;
+    let reason =null;
+    let updatedBy=1;
+    var sql = `call DeleteCategory(${categoryId},${reason},${updatedBy})`;
+    db.query(sql,(err, result) =>{
+      if (err) {
+          console.log(err);
+        res.status(400).send('Failure Hogya Bawa');
+      }
+      else {
+          console.log(result);
+        res.status(200).json(result[0][0]);
+      }
+    })
+}
+catch(e){
+    res.send(400).send('Error');
+}
+}
+
