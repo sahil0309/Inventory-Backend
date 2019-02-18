@@ -1,5 +1,5 @@
 const db = require('../DB');
-console.log('User Controller');
+console.log('Stock Controller');
 module.exports.GetStock = function (req, res) {
     try {
         var sql = "call GetStock()";
@@ -69,7 +69,7 @@ module.exports.AddStock = (req, res) => {
         let quantityAvailable = req.body.quantityAvailable;
         let dealerId = req.body.dealerId;
         let createdBy = 1;
-        var sql = `call AddStock(${productId},${costPrice},${sellingPrice},${purchaseDate},${quantityAvailable}
+        var sql = `call AddStock(${productId},${costPrice},${sellingPrice},'${purchaseDate}',${quantityAvailable}
             ,${dealerId},${createdBy})`;
         db.query(sql, (err, result) => {
             if (err) {
@@ -99,7 +99,7 @@ module.exports.EditStock = (req, res) => {
         let dealerId = req.body.dealerId;
         let reason = null;
         let updatedBy = 1;
-        var sql = `call EditStock(${stockId},${productId},${costPrice},${sellingPrice},${purchaseDate},${quantityAvailable}
+        var sql = `call EditStock(${stockId},${productId},${costPrice},${sellingPrice},'${purchaseDate}',${quantityAvailable}
             ,${dealerId},${reason},${updatedBy})`;
         db.query(sql, (err, result) => {
             if (err) {

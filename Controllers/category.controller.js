@@ -1,5 +1,5 @@
 const db = require('../DB');
-console.log('User Controller');
+console.log('Category Controller');
 module.exports.GetCategory = function (req, res) {
   try {
     var sql = "call GetCategories()";

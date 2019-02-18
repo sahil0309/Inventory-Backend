@@ -1,5 +1,5 @@
 const db = require('../DB');
-console.log('User Controller');
+console.log('Product Controller');
 module.exports.GetProduct = function (req, res) {
   try {
     var sql = "call GetProducts()";

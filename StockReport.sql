@@ -61,7 +61,7 @@ CREATE TABLE `bill_product_detail` (
   KEY `BillProduct_Bill_FK_idx` (`BillId`),
   KEY `BillProduct_Product_FK_idx` (`ProductId`),
   CONSTRAINT `BillProduct_Bill_FK` FOREIGN KEY (`BillId`) REFERENCES `bill` (`BillId`),
-  CONSTRAINT `BillProduct_Product_FK` FOREIGN KEY (`ProductId`) REFERENCES `product` (`ProductId`)
+  CONSTRAINT `BillProduct_Product_FK` FOREIGN KEY (`ProductId`) REFERENCES `product` (`productId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -199,7 +199,7 @@ CREATE TABLE `product` (
   CONSTRAINT `ProductCreated_User_FK` FOREIGN KEY (`createdBy`) REFERENCES `user` (`userId`),
   CONSTRAINT `ProductUpdated_user_FK` FOREIGN KEY (`updatedBy`) REFERENCES `user` (`userId`),
   CONSTRAINT `Product_Category_FK` FOREIGN KEY (`categoryId`) REFERENCES `category` (`categoryId`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -208,7 +208,7 @@ CREATE TABLE `product` (
 
 LOCK TABLES `product` WRITE;
 /*!40000 ALTER TABLE `product` DISABLE KEYS */;
-INSERT INTO `product` VALUES (1,1,'Mi Note 5',0,1,NULL,NULL,NULL,NULL),(6,1,'Demo2',1,1,'2019-02-17 08:30:23.93',1,'2019-02-17 09:40:29.94',NULL),(7,1,'Iphone x',0,1,'2019-02-17 08:30:32.57',1,'2019-02-17 09:46:18.36','Not Required');
+INSERT INTO `product` VALUES (1,1,'Mi Note 5',0,1,NULL,NULL,NULL,NULL),(6,1,'Demo2',1,1,'2019-02-17 08:30:23.93',1,'2019-02-17 09:40:29.94',NULL),(7,1,'Iphone x',0,1,'2019-02-17 08:30:32.57',1,'2019-02-17 09:46:18.36','Not Required'),(8,18,'Ambuja Cement',1,1,'2019-02-18 16:54:31.97',NULL,NULL,NULL),(9,18,'Ultra Tech Cement',1,1,'2019-02-18 16:54:48.29',NULL,NULL,NULL);
 /*!40000 ALTER TABLE `product` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -235,7 +235,7 @@ CREATE TABLE `purchase_history` (
   CONSTRAINT `PurchaseCreated_User_FK` FOREIGN KEY (`createdBy`) REFERENCES `user` (`userId`),
   CONSTRAINT `PurchaseUpdated_User_Fk` FOREIGN KEY (`updatedBy`) REFERENCES `user` (`userId`),
   CONSTRAINT `Purchase_Stock_FK` FOREIGN KEY (`stockId`) REFERENCES `stock` (`stockId`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -244,7 +244,7 @@ CREATE TABLE `purchase_history` (
 
 LOCK TABLES `purchase_history` WRITE;
 /*!40000 ALTER TABLE `purchase_history` DISABLE KEYS */;
-INSERT INTO `purchase_history` VALUES (5,6,40,1,'2019-02-17 15:43:38.11',1,'2019-02-18 13:26:29.76','By Mistake Entry'),(6,7,20,1,'2019-02-17 15:48:21.58',NULL,NULL,NULL);
+INSERT INTO `purchase_history` VALUES (5,6,40,1,'2019-02-17 15:43:38.11',1,'2019-02-18 13:26:29.76','By Mistake Entry'),(6,7,20,1,'2019-02-17 15:48:21.58',1,'2019-02-18 18:40:11.03',NULL),(7,8,10,1,'2019-02-18 18:27:14.79',1,'2019-02-18 18:50:23.14',NULL),(8,9,100,1,'2019-02-18 19:00:55.78',NULL,NULL,NULL),(9,10,150,1,'2019-02-18 19:01:24.79',NULL,NULL,NULL),(10,11,200,1,'2019-02-18 19:41:39.90',NULL,NULL,NULL);
 /*!40000 ALTER TABLE `purchase_history` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -278,7 +278,7 @@ CREATE TABLE `stock` (
   CONSTRAINT `StockUpdation_USer_FK` FOREIGN KEY (`updatedBy`) REFERENCES `user` (`userId`),
   CONSTRAINT `Stock_Dealer_FK` FOREIGN KEY (`dealerId`) REFERENCES `dealer` (`dealerId`),
   CONSTRAINT `Stock_Product_FK` FOREIGN KEY (`productId`) REFERENCES `product` (`productId`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -287,7 +287,7 @@ CREATE TABLE `stock` (
 
 LOCK TABLES `stock` WRITE;
 /*!40000 ALTER TABLE `stock` DISABLE KEYS */;
-INSERT INTO `stock` VALUES (6,'2018-02-18',6,130.00,220.00,40,1,1,'2019-02-17 15:43:38.01',1,'2019-02-18 13:43:35.40','Not Required',0),(7,'2018-02-21',6,110.00,220.00,20,1,1,'2019-02-17 15:48:21.38',NULL,NULL,NULL,1);
+INSERT INTO `stock` VALUES (6,'2018-02-18',6,130.00,220.00,40,1,1,'2019-02-17 15:43:38.01',1,'2019-02-18 13:43:35.40','Not Required',0),(7,'2018-02-12',6,110.00,220.00,20,1,1,'2019-02-17 15:48:21.38',1,'2019-02-18 18:40:10.90',NULL,1),(8,'2018-02-15',6,110.00,220.00,10,1,1,'2019-02-18 18:27:14.71',1,'2019-02-18 18:50:23.01',NULL,1),(9,'2019-02-21',8,110.00,300.00,100,1,1,'2019-02-18 19:00:55.57',NULL,NULL,NULL,1),(10,'2019-02-27',8,200.00,300.00,150,1,1,'2019-02-18 19:01:24.75',NULL,NULL,NULL,1),(11,'2019-02-27',9,300.00,500.00,200,1,1,'2019-02-18 19:41:39.72',NULL,NULL,NULL,1);
 /*!40000 ALTER TABLE `stock` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -783,7 +783,7 @@ from stock  sobj
 join product pobj on sobj.productId = pobj.productId
 join category cobj on pobj.categoryId= cobj.categoryId 
 join purchase_history phistoryobj on sobj.stockId = phistoryobj.stockId
-where sobj.isActive=1;
+where sobj.isActive=1 group by sobj.productId;
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -800,4 +800,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-02-18 19:51:55
+-- Dump completed on 2019-02-19  1:21:23
