@@ -54,7 +54,7 @@ module.exports.GetStockById = (req, res) => {
         })
     }
     catch (e) {
-        res.send(400).send('Error');
+        res.status(400).send('Error');
     }
 }
 
@@ -64,13 +64,12 @@ module.exports.AddStock = (req, res) => {
         console.log(req.body);
         let productId = req.body.productId;
         let costPrice = req.body.costPrice;
-        let sellingPrice = req.body.sellingPrice;
-        let purchaseDate = req.body.purchaseDate;
         let quantityAvailable = req.body.quantityAvailable;
+        let purchaseTimeStamp=req.body.purchaseTimeStamp;
         let dealerId = req.body.dealerId;
         let createdBy = 1;
-        var sql = `call AddStock(${productId},${costPrice},${sellingPrice},'${purchaseDate}',${quantityAvailable}
-            ,${dealerId},${createdBy})`;
+        var sql = `call AddStock(${productId},${costPrice},${quantityAvailable},
+            ,'${purchaseTimeStamp}',${dealerId},${createdBy})`;
         db.query(sql, (err, result) => {
             if (err) {
                 console.log(err);
@@ -83,7 +82,7 @@ module.exports.AddStock = (req, res) => {
         })
     }
     catch (e) {
-        res.send(400).send('Error');
+        res.status(400).send('Error');
     }
 }
 
@@ -93,13 +92,13 @@ module.exports.EditStock = (req, res) => {
         let stockId = req.body.stockId;
         let productId = req.body.productId;
         let costPrice = req.body.costPrice;
-        let sellingPrice = req.body.sellingPrice;
-        let purchaseDate = req.body.purchaseDate;
         let quantityAvailable = req.body.quantityAvailable;
+        let purchaseTimeStamp=req.body.purchaseTimeStamp;
         let dealerId = req.body.dealerId;
         let reason = null;
         let updatedBy = 1;
-        var sql = `call EditStock(${stockId},${productId},${costPrice},${sellingPrice},'${purchaseDate}',${quantityAvailable}
+        var sql = `call EditStock(${stockId},${productId},${costPrice},${quantityAvailable},
+            '${purchaseTimeStamp}'
             ,${dealerId},${reason},${updatedBy})`;
         db.query(sql, (err, result) => {
             if (err) {
@@ -113,7 +112,7 @@ module.exports.EditStock = (req, res) => {
         })
     }
     catch (e) {
-        res.send(400).send('Error');
+        res.status(400).send('Error');
     }
 }
 
@@ -136,6 +135,6 @@ module.exports.DeleteStock = (req, res) => {
         })
     }
     catch (e) {
-        res.send(400).send('Error');
+        res.status(400).send('Error');
     }
 }

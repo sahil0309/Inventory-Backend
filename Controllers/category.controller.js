@@ -36,7 +36,7 @@ module.exports.GetCategoryById=(req,res)=>{
         })
     }
     catch(e){
-        res.send(400).send('Error');
+        res.status(400).send('Error');
     }
 }
 
@@ -60,7 +60,7 @@ module.exports.AddCategory=(req,res)=>{
         })
     }
     catch(e){
-        res.send(400).send('Error');
+        res.status(400).send('Error');
     }
 }
 
@@ -85,7 +85,7 @@ module.exports.EditCategory=(req,res)=>{
         })
     }
     catch(e){
-        res.send(400).send('Error');
+        res.status(400).send('Error');
     }
 }
 
@@ -108,7 +108,7 @@ module.exports.DeleteCategory=(req,res)=>{
     })
 }
 catch(e){
-    res.send(400).send('Error');
+    res.status(400).send('Error');
 }
 }
 

@@ -36,7 +36,7 @@ module.exports.GetProductById = (req, res) => {
     })
   }
   catch (e) {
-    res.send(400).send('Error');
+    res.status(400).send('Error');
   }
 }
 
@@ -60,7 +60,7 @@ module.exports.AddProduct = (req, res) => {
     })
   }
   catch (e) {
-    res.send(400).send('Error');
+    res.status(400).send('Error');
   }
 }
 
@@ -85,7 +85,7 @@ module.exports.EditProduct = (req, res) => {
     })
   }
   catch (e) {
-    res.send(400).send('Error');
+    res.status(400).send('Error');
   }
 }
 
@@ -108,6 +108,6 @@ module.exports.DeleteProduct = (req, res) => {
     })
   }
   catch (e) {
-    res.send(400).send('Error');
+    res.status(400).send('Error');
   }
 }
