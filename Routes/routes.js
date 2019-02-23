@@ -7,6 +7,7 @@ const product_controller = require('../Controllers/product.controller');
 const category_controller = require('../Controllers/category.controller');
 const stock_controller = require('../Controllers/stock.controller');
 const dealer_controller =  require('../Controllers/dealer.controller');
+const customer_controller = require('../Controllers/customer.controller');
 
 // a simple test url to check that all of our files are communicating correctly.
 router.get('/product', product_controller.GetProduct);
@@ -39,5 +40,13 @@ router.get('/dealer/:id',dealer_controller.GetDealerById);
 router.post('/dealer',dealer_controller.AddDealer);
 router.put('/dealer',dealer_controller.EditDealer);
 router.delete('/dealer',dealer_controller.DeleteDealer);
+
+//Customer Routes
+router.get('/customer',customer_controller.GetCustomer);
+router.get('/customer/:id',customer_controller.GetCustomerById);
+router.post('/customer',customer_controller.AddCustomer);
+router.put('/customer',customer_controller.EditCustomer);
+router.delete('/customer',customer_controller.DeleteCustomer);
+
 
 module.exports = router;
