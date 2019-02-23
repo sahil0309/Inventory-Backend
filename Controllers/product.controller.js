@@ -41,7 +41,7 @@ module.exports.GetProductById = (req, res) => {
 }
 
 
-module.exports.AddProduct = (req, res) => {
+module.exports.AddProduct = (req, res) => { 
   try {
     console.log(req.body);
     let productName = req.body.productName;

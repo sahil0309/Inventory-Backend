@@ -21,8 +21,8 @@ module.exports.GetDealer = function (req, res) {
 module.exports.GetDealerById = (req, res) => {
     try {
 
-        let dealerId = req.params.dealerId;
-        console.log('Params', req.params);
+        let dealerId = req.params.id;
+        console.log('Params', dealerId);
         var sql = `call GetDealerById(${dealerId})`;
         db.query(sql, (err, result) => {
             if (err) {
@@ -45,16 +45,18 @@ module.exports.AddDealer = (req, res) => {
         console.log(req.body);
         let dealerUserName = req.body.dealerUserName;
         let dealerContactPerson = req.body.dealerContactPerson;
-        let dealerAgencyName =req.body.dealerAgencyName;
+        let dealerAgencyName = req.body.dealerAgencyName;
         let dealerAddress = req.body.dealerAddress;
-        let dealerCity=req.body.dealerCity;
-        let dealerPinCode=req.body.dealerPinCode;
+        let dealerCity = req.body.dealerCity;
+        let dealerPinCode = req.body.dealerPinCode;
         let dealerEmail = req.body.dealerEmail;
-        let dealerMobileNumber=req.body.dealerMobileNumber;
-        let dealerPhoneNumber=req.body.dealerPhoneNumber;
+        let dealerMobileNumber = req.body.dealerMobileNumber;
+        let dealerPhoneNumber = req.body.dealerPhoneNumber;
         let createdBy = 1;
-        var sql = `call AddStock('${dealerUserName}','${dealerContactPerson}','${dealerAgencyName}',${dealerAddress}',
-            ,'${dealerCity}',${dealerPinCode},'${dealerEmail}','${dealerMobileNumber}','${dealerPhoneNumber}',${createdBy})`;
+        var sql = `call AddDealer('${dealerUserName}','${dealerContactPerson}','${dealerAgencyName}',
+             '${dealerAddress}',
+            '${dealerCity}',${dealerPinCode},'${dealerEmail}','${dealerMobileNumber}',
+            '${dealerPhoneNumber}',${createdBy})`;
         db.query(sql, (err, result) => {
             if (err) {
                 console.log(err);
@@ -74,21 +76,22 @@ module.exports.AddDealer = (req, res) => {
 module.exports.EditDealer = (req, res) => {
     try {
         console.log(req.body);
-        let dealerId= req.body.dealerId;
+        let dealerId = req.body.dealerId;
         let dealerUserName = req.body.dealerUserName;
         let dealerContactPerson = req.body.dealerContactPerson;
-        let dealerAgencyName =req.body.dealerAgencyName;
+        let dealerAgencyName = req.body.dealerAgencyName;
         let dealerAddress = req.body.dealerAddress;
-        let dealerCity=req.body.dealerCity;
-        let dealerPinCode=req.body.dealerPinCode;
+        let dealerCity = req.body.dealerCity;
+        let dealerPinCode = req.body.dealerPinCode;
         let dealerEmail = req.body.dealerEmail;
-        let dealerMobileNumber=req.body.dealerMobileNumber;
-        let dealerPhoneNumber=req.body.dealerPhoneNumber;
-        let updateddBy = 1;
-        var sql = `call EditDealer('${dealerId},'${dealerUserName}','${dealerContactPerson}',
+        let dealerMobileNumber = req.body.dealerMobileNumber;
+        let dealerPhoneNumber = req.body.dealerPhoneNumber;
+        let updatedBy = 1;
+        var sql = `call EditDealer(${dealerId},'${dealerUserName}','${dealerContactPerson}',
         '${dealerAgencyName}',
         '${dealerAddress}',
-        ,'${dealerCity}',${dealerPinCode},'${dealerEmail}','${dealerMobileNumber}','${dealerPhoneNumber}',${updatedBy})`;
+        '${dealerCity}',${dealerPinCode},'${dealerEmail}','${dealerMobileNumber}','${dealerPhoneNumber}',
+        ${updatedBy})`;
         db.query(sql, (err, result) => {
             if (err) {
                 console.log(err);

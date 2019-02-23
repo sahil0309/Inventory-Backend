@@ -64,12 +64,12 @@ module.exports.AddStock = (req, res) => {
         console.log(req.body);
         let productId = req.body.productId;
         let costPrice = req.body.costPrice;
-        let quantityAvailable = req.body.quantityAvailable;
+        let quantityPurchased = req.body.quantityPurchased;
         let purchaseTimeStamp=req.body.purchaseTimeStamp;
         let dealerId = req.body.dealerId;
         let createdBy = 1;
-        var sql = `call AddStock(${productId},${costPrice},${quantityAvailable},
-            ,'${purchaseTimeStamp}',${dealerId},${createdBy})`;
+        var sql = `call AddStock(${productId},${costPrice},${quantityPurchased},
+                    '${purchaseTimeStamp}',${dealerId},${createdBy})`;
         db.query(sql, (err, result) => {
             if (err) {
                 console.log(err);
@@ -88,18 +88,19 @@ module.exports.AddStock = (req, res) => {
 
 module.exports.EditStock = (req, res) => {
     try {
-        console.log(req.body);
+        console.log(req.body.purchaseTimeStamp);
+        let date = Date.parse(req.body.purchaseTimeStamp);
+        console.log('date',date);
         let stockId = req.body.stockId;
         let productId = req.body.productId;
         let costPrice = req.body.costPrice;
-        let quantityAvailable = req.body.quantityAvailable;
+        let quantityPurchased = req.body.quantityPurchased;
         let purchaseTimeStamp=req.body.purchaseTimeStamp;
         let dealerId = req.body.dealerId;
-        let reason = null;
         let updatedBy = 1;
-        var sql = `call EditStock(${stockId},${productId},${costPrice},${quantityAvailable},
-            '${purchaseTimeStamp}'
-            ,${dealerId},${reason},${updatedBy})`;
+        var sql = `call EditStock(${stockId},${productId},${costPrice},${quantityPurchased},
+           ' ${purchaseTimeStamp}'
+            ,${dealerId},${updatedBy})`;
         db.query(sql, (err, result) => {
             if (err) {
                 console.log(err);
