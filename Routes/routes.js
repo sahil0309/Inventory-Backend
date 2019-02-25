@@ -5,7 +5,7 @@ console.log('Controllers Executing ');
 // Require the controllers WHICH WE DID NOT CREATE YET!!
 const product_controller = require('../Controllers/product.controller');
 const category_controller = require('../Controllers/category.controller');
-const stock_controller = require('../Controllers/stock.controller');
+const purchase_controller = require('../Controllers/purchase.controller');
 const dealer_controller =  require('../Controllers/dealer.controller');
 const customer_controller = require('../Controllers/customer.controller');
 
@@ -25,14 +25,14 @@ router.put('/category', category_controller.EditCategory);
 router.delete('/category', category_controller.DeleteCategory);
 
 //Stock Routes 
-router.get('/stock', stock_controller.GetStock);
-router.get('/stock/:id', stock_controller.GetStockById);
-router.post('/stock', stock_controller.AddStock);
-router.put('/stock', stock_controller.EditStock);
-router.delete('/stock', stock_controller.DeleteStock);
+router.get('/purchase',purchase_controller.GetPurchase);
+router.get('/purchase/:id', purchase_controller.GetPurchaseById);
+router.post('/purchase', purchase_controller.AddPurchase);
+router.put('/purchase', purchase_controller.EditPurchase);
+router.delete('/purchase', purchase_controller.DeletePurchase);
 
 //Stock Report Route
-router.get('/stockReport', stock_controller.GetStockReport);
+router.get('/stockReport', purchase_controller.GetStockReport);
 
 //Dealer Routes
 router.get('/dealer',dealer_controller.GetDealer);

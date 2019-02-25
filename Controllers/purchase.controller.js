@@ -1,8 +1,8 @@
 const db = require('../DB');
-console.log('Stock Controller');
-module.exports.GetStock = function (req, res) {
+console.log('Purchase Controller');
+module.exports.GetPurchase = function (req, res) {
     try {
-        var sql = "call GetStock()";
+        var sql = "call GetPurchase()";
         db.query(sql, function (err, result) {
             if (err) {
                 res.status(400).send('Failure Hogya Bawa');
@@ -20,7 +20,7 @@ module.exports.GetStock = function (req, res) {
 
 module.exports.GetStockReport = function (req, res) {
     try {
-        var sql = "call GetStockReport()";
+        var sql = "call GetPurchaseReport()";
         db.query(sql, function (err, result) {
             if (err) {
                 res.status(400).send('Failure Hogya Bawa');
@@ -36,12 +36,12 @@ module.exports.GetStockReport = function (req, res) {
     }
 }
 
-module.exports.GetStockById = (req, res) => {
+module.exports.GetPurchaseById = (req, res) => {
     try {
 
-        let stockID = req.params.id;
+        let PurchaseID = req.params.id;
         console.log('Params', req.params);
-        var sql = `call GetStockById(${stockID})`;
+        var sql = `call GetPurchaseById(${PurchaseID})`;
         db.query(sql, (err, result) => {
             if (err) {
                 console.log(err);
@@ -59,7 +59,7 @@ module.exports.GetStockById = (req, res) => {
 }
 
 
-module.exports.AddStock = (req, res) => {
+module.exports.AddPurchase = (req, res) => {
     try {
         console.log(req.body);
         let productId = req.body.productId;
@@ -68,7 +68,7 @@ module.exports.AddStock = (req, res) => {
         let purchaseTimeStamp=req.body.purchaseTimeStamp;
         let dealerId = req.body.dealerId;
         let createdBy = 1;
-        var sql = `call AddStock(${productId},${costPrice},${quantityPurchased},
+        var sql = `call AddPurchase(${productId},${costPrice},${quantityPurchased},
                     '${purchaseTimeStamp}',${dealerId},${createdBy})`;
         db.query(sql, (err, result) => {
             if (err) {
@@ -86,19 +86,19 @@ module.exports.AddStock = (req, res) => {
     }
 }
 
-module.exports.EditStock = (req, res) => {
+module.exports.EditPurchase = (req, res) => {
     try {
         console.log(req.body.purchaseTimeStamp);
         let date = Date.parse(req.body.purchaseTimeStamp);
         console.log('date',date);
-        let stockId = req.body.stockId;
+        let PurchaseId = req.body.PurchaseId;
         let productId = req.body.productId;
         let costPrice = req.body.costPrice;
         let quantityPurchased = req.body.quantityPurchased;
         let purchaseTimeStamp=req.body.purchaseTimeStamp;
         let dealerId = req.body.dealerId;
         let updatedBy = 1;
-        var sql = `call EditStock(${stockId},${productId},${costPrice},${quantityPurchased},
+        var sql = `call EditPurchase(${PurchaseId},${productId},${costPrice},${quantityPurchased},
            ' ${purchaseTimeStamp}'
             ,${dealerId},${updatedBy})`;
         db.query(sql, (err, result) => {
@@ -117,13 +117,13 @@ module.exports.EditStock = (req, res) => {
     }
 }
 
-module.exports.DeleteStock = (req, res) => {
+module.exports.DeletePurchase = (req, res) => {
     try {
         console.log(req.body);
-        let stockId = req.body.stockId;
+        let PurchaseId = req.body.PurchaseId;
         let reason = null;
         let updatedBy = 1;
-        var sql = `call DeleteStock(${stockId},${reason},${updatedBy})`;
+        var sql = `call DeletePurchase(${PurchaseId},${reason},${updatedBy})`;
         db.query(sql, (err, result) => {
             if (err) {
                 console.log(err);
