@@ -233,8 +233,8 @@ DROP TABLE IF EXISTS `purchase_history`;
 CREATE TABLE `purchase_history` (
   `purchaseId` int(11) NOT NULL AUTO_INCREMENT,
   `productId` int(11) NOT NULL,
-  `quantityPurchased` int(11) NOT NULL,
   `costPrice` decimal(15,2) NOT NULL,
+  `quantityPurchased` int(11) NOT NULL,
   `purchaseTimeStamp` timestamp NOT NULL,
   `dealerId` int(11) NOT NULL,
   `createdBy` int(11) NOT NULL DEFAULT '1',
@@ -252,7 +252,7 @@ CREATE TABLE `purchase_history` (
   CONSTRAINT `PurchaseUpdated_User_Fk` FOREIGN KEY (`updatedBy`) REFERENCES `user` (`userId`),
   CONSTRAINT `Purchase_Dealer_FK` FOREIGN KEY (`dealerId`) REFERENCES `dealer` (`dealerId`),
   CONSTRAINT `Purchase_Product_FK` FOREIGN KEY (`productId`) REFERENCES `product` (`productId`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=45 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -261,6 +261,7 @@ CREATE TABLE `purchase_history` (
 
 LOCK TABLES `purchase_history` WRITE;
 /*!40000 ALTER TABLE `purchase_history` DISABLE KEYS */;
+INSERT INTO `purchase_history` VALUES (41,6,200.00,10,'2018-02-25 18:30:00',1,1,'2019-02-26 10:17:40.34',NULL,NULL,NULL,1),(42,6,200.00,10,'2018-02-25 18:30:00',1,1,'2019-02-26 10:17:43.45',1,'2019-02-26 10:18:52.21',NULL,1),(43,7,2000.00,100,'2018-02-25 18:30:00',1,1,'2019-02-26 10:22:29.34',NULL,NULL,NULL,1),(44,7,2000.00,100,'2018-02-25 18:30:00',1,1,'2019-02-26 10:22:31.70',NULL,NULL,NULL,1);
 /*!40000 ALTER TABLE `purchase_history` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -288,7 +289,7 @@ CREATE TABLE `stock` (
   CONSTRAINT `StockCreation_User_FK` FOREIGN KEY (`createdBy`) REFERENCES `user` (`userId`),
   CONSTRAINT `StockUpdation_USer_FK` FOREIGN KEY (`updatedBy`) REFERENCES `user` (`userId`),
   CONSTRAINT `Stock_Product_FK` FOREIGN KEY (`productId`) REFERENCES `product` (`productId`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -297,6 +298,7 @@ CREATE TABLE `stock` (
 
 LOCK TABLES `stock` WRITE;
 /*!40000 ALTER TABLE `stock` DISABLE KEYS */;
+INSERT INTO `stock` VALUES (19,6,20,1,'2019-02-26 10:17:40.42',1,'2019-02-26 10:18:52.26',NULL,1),(20,7,200,1,'2019-02-26 10:22:29.49',NULL,NULL,NULL,1);
 /*!40000 ALTER TABLE `stock` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -540,15 +542,44 @@ In _quantityPurchased int(11),
 In _purchaseTimeStamp timestamp,
 In _dealerId int(11),In _createdBy int(11))
 BEGIN
-declare _StockId int;
-DECLARE EXIT HANDLER FOR SQLEXCEPTION SELECT 'error' as status,'Stock Addition Failed' as message;
-insert into purchase_history(productId,costPrice,purchaseTimeStamp,quantityPurchased,dealerId,createdBy) values(
+/*DECLARE EXIT HANDLER FOR SQLEXCEPTION SELECT 'error' as status,'Stock Addition Failed' as message;*/
+insert into purchase_history
+(productId,costPrice,purchaseTimeStamp,quantityPurchased,dealerId,createdBy) 
+values(
 _productId,_costPrice,_purchaseTimeStamp,_quantityPurchased,_dealerId,_createdBy);
  if exists(select productId from stock where productId=_productId) then
- insert into stock(productId,quantityAvailable) values(_productId,_quantityPurchased);
+ update stock set quantityAvailable=quantityAvailable + _quantityPurchased where productId=_productId;
  else
- update stock set quantityAvailable=quantityAvailable + quantityPurchased where productId=_productId;
+  insert into stock(productId,quantityAvailable) values(_productId,_quantityPurchased);
  end if;
+SELECT 'success' AS status, 'Stock Added Succesfully' AS message;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `AddStock` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `AddStock`(In _productId int(11),
+In _costPrice decimal(15,2),
+In _purchaseTimeStamp timestamp,
+In _quantityAvailable int(11),In _dealerId int(11),In _createdBy int(11))
+BEGIN
+declare _StockId int;
+DECLARE EXIT HANDLER FOR SQLEXCEPTION SELECT 'error' as status,'Stock Addition Failed' as message;
+insert into stock(productId,costPrice,purchaseTimeStamp,quantityAvailable,dealerId,createdBy) values(
+_productId,_costPrice,_purchaseTimeStamp,_quantityAvailable,_dealerId,_createdBy);
+ SET _stockId = LAST_INSERT_ID();
+ insert into purchase_history(stockId,quantity) values(_stockId,_quantityAvailable);
 SELECT 'success' AS status, 'Stock Added Succesfully' AS message;
 END ;;
 DELIMITER ;
@@ -694,6 +725,40 @@ update stock set quantityAvailable=quantityAvailable - quantityPurchased where p
 SELECT 
     'success' AS status,
     'Purchase Deleted Successfully' AS message;
+else 
+SELECT 'error' as status,'Stock Id Does not Exist' as message;
+end if;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `DeleteStock` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `DeleteStock`(In _stockId int(11),In _reason varchar(200) ,In _updatedBy int(11))
+BEGIN
+DECLARE EXIT HANDLER FOR SQLEXCEPTION SELECT 'error' as status,'Product Deletion Failed' as message;
+if  exists(select stockId from stock where stockId=_stockId && isActive=1)
+then
+UPDATE stock
+SET
+`isActive` = 0,
+`updatedBy` = _updatedBy,
+`updatedOn` = current_timestamp(2),
+`reason` = _reason
+WHERE `stockId` = _stockId;
+SELECT 
+    'success' AS status,
+    'Stock Deleted Successfully' AS message;
 else 
 SELECT 'error' as status,'Stock Id Does not Exist' as message;
 end if;
@@ -869,7 +934,7 @@ DELIMITER ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `EditPurchase`(
-In _PurchaseId int(11),In _productId int(11),In _costPrice decimal(15,2),
+In _purchaseId int(11),In _productId int(11),In _costPrice decimal(15,2),
 In _quantityPurchased int(11),
 In _purchaseTimeStamp timestamp,
 In _dealerId int(11),
@@ -877,6 +942,8 @@ In _updatedBy int(11)
 )
 BEGIN
 /*DECLARE EXIT HANDLER FOR SQLEXCEPTION SELECT 'error' as status,'Stock Updation Failed' as message;*/
+Declare _existingQuantity int;
+Set _existingQuantity =(select quantityPurchased from purchase_history where purchaseId=_purchaseId);
 UPDATE purchase_history 
 SET 
     productId = _productId,
@@ -887,14 +954,14 @@ SET
     updatedOn = CURRENT_TIMESTAMP(2),
     dealerId = _dealerID
 WHERE
-    PurchaseId = _PurchaseId;
+    purchaseId = _purchaseId;
 UPDATE stock
 SET 
-    quantityAvailable = quantityAvailable + _quantityPurchased,
+    quantityAvailable = quantityAvailable - _existingQuantity + _quantityPurchased,
     updatedBy = _updatedBy,
     updatedOn = CURRENT_TIMESTAMP(2)
 WHERE
-   productId = productId;
+   productId = _productId;
 SELECT 'success' AS status, 'Stock Updated Successfully' AS message;
 END ;;
 DELIMITER ;
@@ -1071,7 +1138,7 @@ DECLARE EXIT HANDLER FOR SQLEXCEPTION SELECT 'error' as status,'Unable To Find P
 select ph.*,p.productName,c.categoryName,d.dealerContactPerson
  from purchase_history ph join product p on ph.productId=p.productId 
 join category c on p.categoryId = c.categoryId join dealer d on 
-ph.dealerId = d.dealerId where isActive=1;
+ph.dealerId = d.dealerId where ph.isActive=1;
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -1099,6 +1166,47 @@ DELIMITER ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `GetStock` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `GetStock`()
+BEGIN
+DECLARE EXIT HANDLER FOR SQLEXCEPTION SELECT 'error' as status,'Unable To Find Stocks' as message;
+select s.*,p.productName,c.categoryName,d.dealerName from stock s join product p on s.productId=p.productId 
+join category c on p.categoryId = c.categoryId join dealer d on 
+s.dealerId = d.dealerId where s.isActive=1;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `GetStockById` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `GetStockById`(In _stockId int(11))
+BEGIN
+select * from stock where stockId=_stockId;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!50003 DROP PROCEDURE IF EXISTS `GetStockReport` */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
@@ -1120,7 +1228,7 @@ from stock  sobj
 join product pobj on sobj.productId = pobj.productId
 join category cobj on pobj.categoryId= cobj.categoryId 
 join purchase_history phistoryobj on sobj.productId = phistoryobj.productId
-where sobj.isActive=1;
+where sobj.isActive=1 group by phistoryObj.productId;
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -1137,4 +1245,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-02-25 23:25:22
+-- Dump completed on 2019-02-26 15:57:27

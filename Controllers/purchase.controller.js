@@ -20,7 +20,7 @@ module.exports.GetPurchase = function (req, res) {
 
 module.exports.GetStockReport = function (req, res) {
     try {
-        var sql = "call GetPurchaseReport()";
+        var sql = "call GetStockReport()";
         db.query(sql, function (err, result) {
             if (err) {
                 res.status(400).send('Failure Hogya Bawa');
@@ -91,14 +91,14 @@ module.exports.EditPurchase = (req, res) => {
         console.log(req.body.purchaseTimeStamp);
         let date = Date.parse(req.body.purchaseTimeStamp);
         console.log('date',date);
-        let PurchaseId = req.body.PurchaseId;
+        let purchaseId = req.body.purchaseId;
         let productId = req.body.productId;
         let costPrice = req.body.costPrice;
         let quantityPurchased = req.body.quantityPurchased;
         let purchaseTimeStamp=req.body.purchaseTimeStamp;
         let dealerId = req.body.dealerId;
         let updatedBy = 1;
-        var sql = `call EditPurchase(${PurchaseId},${productId},${costPrice},${quantityPurchased},
+        var sql = `call EditPurchase(${purchaseId},${productId},${costPrice},${quantityPurchased},
            ' ${purchaseTimeStamp}'
             ,${dealerId},${updatedBy})`;
         db.query(sql, (err, result) => {
