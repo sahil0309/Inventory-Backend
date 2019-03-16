@@ -45,6 +45,7 @@ module.exports.AddDealer = (req, res) => {
         console.log(req.body);
         let dealerUserName = req.body.dealerUserName;
         let dealerContactPerson = req.body.dealerContactPerson;
+        let dealerType = req.body.dealerType;
         let dealerAgencyName = req.body.dealerAgencyName;
         let dealerAddress = req.body.dealerAddress;
         let dealerCity = req.body.dealerCity;
@@ -53,7 +54,9 @@ module.exports.AddDealer = (req, res) => {
         let dealerMobileNumber = req.body.dealerMobileNumber;
         let dealerPhoneNumber = req.body.dealerPhoneNumber;
         let createdBy = 1;
-        var sql = `call AddDealer('${dealerUserName}','${dealerContactPerson}','${dealerAgencyName}',
+        var sql = `call AddDealer('${dealerUserName}','${dealerContactPerson}',
+        '${dealerType}',
+        '${dealerAgencyName}',
              '${dealerAddress}',
             '${dealerCity}',${dealerPinCode},'${dealerEmail}','${dealerMobileNumber}',
             '${dealerPhoneNumber}',${createdBy})`;
@@ -79,6 +82,7 @@ module.exports.EditDealer = (req, res) => {
         let dealerId = req.body.dealerId;
         let dealerUserName = req.body.dealerUserName;
         let dealerContactPerson = req.body.dealerContactPerson;
+        let dealerType = req.body.dealerType;
         let dealerAgencyName = req.body.dealerAgencyName;
         let dealerAddress = req.body.dealerAddress;
         let dealerCity = req.body.dealerCity;
@@ -88,6 +92,7 @@ module.exports.EditDealer = (req, res) => {
         let dealerPhoneNumber = req.body.dealerPhoneNumber;
         let updatedBy = 1;
         var sql = `call EditDealer(${dealerId},'${dealerUserName}','${dealerContactPerson}',
+        '${dealerType}',
         '${dealerAgencyName}',
         '${dealerAddress}',
         '${dealerCity}',${dealerPinCode},'${dealerEmail}','${dealerMobileNumber}','${dealerPhoneNumber}',
