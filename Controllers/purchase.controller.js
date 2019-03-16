@@ -61,13 +61,32 @@ module.exports.GetPurchaseById = (req, res) => {
 
 module.exports.AddPurchase = (req, res) => {
     try {
-        console.log(req.body);
-        let productId = req.body.productId;
-        let costPrice = req.body.costPrice;
-        let quantityPurchased = req.body.quantityPurchased;
-        let purchaseTimeStamp=req.body.purchaseTimeStamp;
+        console.log(req.body); 
         let dealerId = req.body.dealerId;
-        let createdBy = 1;
+        let vehicleNumber = req.body.vehicleNumber;
+        let labourCharges = req.body.labourCharges;
+        let purchaseArray =  req.body.purchaseArray;
+        let modeofPayment = req.body.modeofPayment;
+        let amountPaid  = req.body.amountPaid;
+        let balance = amount - amountPaid;
+        let amount =0;
+       /*[
+         {
+             productId;
+             quantity;
+             rate;
+             cgst;
+             sgst;
+             igst;
+         }
+       ]
+
+       */
+        purchaseArray.map((product)=>{
+            amount = amount + product.quantity * rate;
+        })
+        
+       let createdBy = 1;
         var sql = `call AddPurchase(${productId},${costPrice},${quantityPurchased},
                     '${purchaseTimeStamp}',${dealerId},${createdBy})`;
         db.query(sql, (err, result) => {

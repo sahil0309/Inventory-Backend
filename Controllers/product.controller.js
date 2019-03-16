@@ -46,8 +46,14 @@ module.exports.AddProduct = (req, res) => {
     console.log(req.body);
     let productName = req.body.productName;
     let categoryId = req.body.categoryId;
+    let variant = req.body.variant;
+    let unitOfMeasure = req.body.unitOfMeasure;
+    let cgstPercentage = req.body.cgstPercentage;
+    let sgstPercentage = req.body.sgstPercentage;
+    let igstPercentage= req.body.igstPercentage
     let createdBy = 1;
-    var sql = `call AddProduct('${productName}',${categoryId},${createdBy})`;
+    var sql = `call AddProduct('${productName}',${categoryId},'${variant}','${unitOfMeasure}',
+               ${cgstPercentage},${sgstPercentage},${igstPercentage},${createdBy})`;
     db.query(sql, (err, result) => {
       if (err) {
         console.log(err);
@@ -70,9 +76,16 @@ module.exports.EditProduct = (req, res) => {
     let productId = req.body.productId;
     let productName = req.body.productName;
     let categoryId = req.body.categoryId;
+    let variant = req.body.variant;
+    let unitOfMeasure = req.body.unitOfMeasure;
+    let cgstPercentage = req.body.cgstPercentage;
+    let sgstPercentage = req.body.sgstPercentage;
+    let igstPercentage= req.body.igstPercentage
     let reason = null;
     let updatedBy = 1;
-    var sql = `call EditProduct(${productId},'${productName}',${categoryId},${reason},${updatedBy})`;
+    var sql = `call EditProduct(${productId},'${productName}',${categoryId},
+    '${variant}','${unitOfMeasure}', ${cgstPercentage},${sgstPercentage},${igstPercentage},
+    ${reason},${updatedBy})`;
     db.query(sql, (err, result) => {
       if (err) {
         console.log(err);
