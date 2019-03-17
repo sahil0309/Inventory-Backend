@@ -59,46 +59,92 @@ module.exports.GetPurchaseById = (req, res) => {
 }
 
 
-module.exports.AddPurchase = (req, res) => {
+module.exports.AddPurchase = async(req, res) => {
     try {
-        console.log(req.body); 
+        console.log(req.body);
+        let purchaseId;
         let dealerId = req.body.dealerId;
         let vehicleNumber = req.body.vehicleNumber;
         let labourCharges = req.body.labourCharges;
-        let purchaseArray =  req.body.purchaseArray;
-        let modeofPayment = req.body.modeofPayment;
-        let amountPaid  = req.body.amountPaid;
+        let purchaseArray = req.body.purchaseArray;
+        let amount = req.body.amount;
+        let netGst = req.body.netGst;
+        let totalAmount = req.body.totalAmount;
+        let amountPaid = req.body.amountPaid;
         let balance = amount - amountPaid;
-        let amount =0;
-       /*[
-         {
-             productId;
-             quantity;
-             rate;
-             cgst;
-             sgst;
-             igst;
-         }
-       ]
+        let modeofPayment = req.body.modeofPayment;
 
-       */
-        purchaseArray.map((product)=>{
-            amount = amount + product.quantity * rate;
-        })
-        
-       let createdBy = 1;
-        var sql = `call AddPurchase(${productId},${costPrice},${quantityPurchased},
-                    '${purchaseTimeStamp}',${dealerId},${createdBy})`;
-        db.query(sql, (err, result) => {
+        var sql = `call AddPurchase(${dealerId},${vehicleNumber},${labourCharges},
+            ${amount},${netGst},${totalAmount},${amountPaid},${purchaseId})`;
+            await dbQuery(sql);
+      /*  db.query(sql, (err, result) => {
             if (err) {
                 console.log(err);
                 res.status(400).send('Failure Hogya Bawa');
             }
             else {
                 console.log(result);
-                res.status(200).json(result[0][0]);
+            
             }
+        })*/
+
+
+        /*[
+          {
+              productId;
+              quantity;
+              rate;
+              cgst;
+              sgst;
+              igst;
+          }
+        ]
+        */
+       
+        purchaseArray.map(async (product) => {
+            var sql = `call AddPurchaseProduct(${purchaseId},${product.productId},${product.quantity},
+                ${product.rate},${product.cgst},${product.sgst},${product.igst}})`;
+                await dbQuery(sql);
+               /* db.query(sql, (err, result) => {
+                    if (err) {
+                        console.log(err);
+                        res.status(400).send('Failure Hogya Bawa');
+                    }
+                    else {
+                        console.log(result);
+                    
+                    }
+                })*/
         })
+        
+        if(amountPaid>0){
+        var transactionSql = `call ManageTransaction(${purchaseId},${dealerId},${amountPaid},${modeofPayment},'Purchase')`;
+        await dbQuery(transactionSql);
+       /*db.query(transactionSql, (err, result) => {
+            if (err) {
+                console.log(err);
+                res.status(400).send('Failure Hogya Bawa');
+            }
+            else {
+                console.log(result);
+            
+            }
+        })*/
+       }
+       if(balance>0){
+        var outstandingSQl = `call ManageOutstandings(${dealerId},${balance},'debit')`;
+        await dbQuery(outstandingSQl)
+        /* db.query(outstandingSQl, (err, result) => {
+            if (err) {
+                console.log(err);
+                res.status(400).send('Failure Hogya Bawa');
+            }
+            else {
+                console.log(result);
+            
+            }
+        })*/
+       }
     }
     catch (e) {
         res.status(400).send('Error');
@@ -109,12 +155,12 @@ module.exports.EditPurchase = (req, res) => {
     try {
         console.log(req.body.purchaseTimeStamp);
         let date = Date.parse(req.body.purchaseTimeStamp);
-        console.log('date',date);
+        console.log('date', date);
         let purchaseId = req.body.purchaseId;
         let productId = req.body.productId;
         let costPrice = req.body.costPrice;
         let quantityPurchased = req.body.quantityPurchased;
-        let purchaseTimeStamp=req.body.purchaseTimeStamp;
+        let purchaseTimeStamp = req.body.purchaseTimeStamp;
         let dealerId = req.body.dealerId;
         let updatedBy = 1;
         var sql = `call EditPurchase(${purchaseId},${productId},${costPrice},${quantityPurchased},
@@ -157,4 +203,20 @@ module.exports.DeletePurchase = (req, res) => {
     catch (e) {
         res.status(400).send('Error');
     }
+}
+
+function dbQuery(sqlQuery){
+    return new Promise((resolve,reject)=>{
+        db.query(sqlQuery,(err,result)=>{
+            if(err){
+                console.log(err);
+                reject(err);
+            }
+            else{
+                console.log(result);
+                resolve(result);
+            }
+        })
+
+    })
 }

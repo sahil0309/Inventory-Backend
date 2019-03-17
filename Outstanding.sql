@@ -25,12 +25,18 @@ DROP TABLE IF EXISTS `bill`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
 CREATE TABLE `bill` (
-  `BillId` int(11) NOT NULL AUTO_INCREMENT,
-  `UserId` int(11) NOT NULL,
-  `AmountPaid` decimal(15,2) NOT NULL,
-  PRIMARY KEY (`BillId`),
-  KEY `Bill_User_FK_idx` (`UserId`),
-  CONSTRAINT `Bill_User_FK` FOREIGN KEY (`UserId`) REFERENCES `customer` (`customerId`)
+  `billId` int(11) NOT NULL AUTO_INCREMENT,
+  `dealerId` int(11) NOT NULL,
+  `timeStamp` timestamp NOT NULL,
+  `totalAmount` decimal(10,4) NOT NULL,
+  `labourCharges` decimal(10,4) DEFAULT NULL,
+  `vehicleNumber` varchar(255) DEFAULT NULL,
+  `paidAmount` decimal(10,4) NOT NULL,
+  `balance` decimal(10,4) NOT NULL DEFAULT '0.0000',
+  PRIMARY KEY (`billId`),
+  KEY `Bill_User_FK_idx` (`dealerId`),
+  CONSTRAINT `BIll_Dealer_FK` FOREIGN KEY (`dealerId`) REFERENCES `dealer` (`dealerId`),
+  CONSTRAINT `Bill_User_FK` FOREIGN KEY (`dealerId`) REFERENCES `customer` (`customerId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -60,7 +66,7 @@ CREATE TABLE `bill_product_detail` (
   PRIMARY KEY (`BillProductId`),
   KEY `BillProduct_Bill_FK_idx` (`BillId`),
   KEY `BillProduct_Product_FK_idx` (`ProductId`),
-  CONSTRAINT `BillProduct_Bill_FK` FOREIGN KEY (`BillId`) REFERENCES `bill` (`BillId`),
+  CONSTRAINT `BillProduct_Bill_FK` FOREIGN KEY (`BillId`) REFERENCES `bill` (`billId`),
   CONSTRAINT `BillProduct_Product_FK` FOREIGN KEY (`ProductId`) REFERENCES `product` (`productId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -187,6 +193,33 @@ INSERT INTO `dealer` VALUES (1,'Sahil','Sector 6 kaypee heritage Koparkhirane','
 UNLOCK TABLES;
 
 --
+-- Table structure for table `outstanding`
+--
+
+DROP TABLE IF EXISTS `outstanding`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+ SET character_set_client = utf8mb4 ;
+CREATE TABLE `outstanding` (
+  `outstandingId` int(11) NOT NULL AUTO_INCREMENT,
+  `dealerId` int(11) NOT NULL,
+  `debit` decimal(10,4) NOT NULL DEFAULT '0.0000',
+  `credit` decimal(10,4) NOT NULL DEFAULT '0.0000',
+  PRIMARY KEY (`outstandingId`),
+  KEY `Outstanding_DealerId_idx` (`dealerId`),
+  CONSTRAINT `Outstanding_DealerId` FOREIGN KEY (`dealerId`) REFERENCES `dealer` (`dealerId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `outstanding`
+--
+
+LOCK TABLES `outstanding` WRITE;
+/*!40000 ALTER TABLE `outstanding` DISABLE KEYS */;
+/*!40000 ALTER TABLE `outstanding` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `product`
 --
 
@@ -197,9 +230,14 @@ CREATE TABLE `product` (
   `productId` int(11) NOT NULL AUTO_INCREMENT,
   `categoryId` int(11) NOT NULL,
   `productName` varchar(100) NOT NULL,
+  `variant` varchar(100) NOT NULL,
+  `unitOfMeasure` varchar(100) NOT NULL,
+  `cgstPercentage` decimal(10,4) DEFAULT NULL,
+  `sgstPercentage` decimal(10,4) DEFAULT NULL,
+  `igstPercentage` decimal(10,4) unsigned DEFAULT NULL,
   `isActive` tinyint(1) NOT NULL DEFAULT '1',
   `createdBy` int(11) NOT NULL DEFAULT '1',
-  `createdOn` timestamp(2) NULL DEFAULT CURRENT_TIMESTAMP(2),
+  `createdOn` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `updatedBy` int(11) DEFAULT NULL,
   `updatedOn` timestamp(2) NULL DEFAULT NULL,
   `reason` varchar(200) DEFAULT NULL,
@@ -211,7 +249,7 @@ CREATE TABLE `product` (
   CONSTRAINT `ProductCreated_User_FK` FOREIGN KEY (`createdBy`) REFERENCES `user` (`userId`),
   CONSTRAINT `ProductUpdated_user_FK` FOREIGN KEY (`updatedBy`) REFERENCES `user` (`userId`),
   CONSTRAINT `Product_Category_FK` FOREIGN KEY (`categoryId`) REFERENCES `category` (`categoryId`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -220,7 +258,7 @@ CREATE TABLE `product` (
 
 LOCK TABLES `product` WRITE;
 /*!40000 ALTER TABLE `product` DISABLE KEYS */;
-INSERT INTO `product` VALUES (1,1,'Mi Note 5',0,1,NULL,NULL,NULL,NULL),(6,1,'Demo2',1,1,'2019-02-17 08:30:23.93',1,'2019-02-17 09:40:29.94',NULL),(7,1,'Iphone x',0,1,'2019-02-17 08:30:32.57',1,'2019-02-17 09:46:18.36','Not Required'),(8,18,'Ambuja Cement',1,1,'2019-02-18 16:54:31.97',NULL,NULL,NULL),(9,18,'Ultra Tech Cement',1,1,'2019-02-18 16:54:48.29',NULL,NULL,NULL),(10,20,'Monitor',1,1,'2019-02-19 07:56:05.17',NULL,NULL,NULL);
+INSERT INTO `product` VALUES (1,1,'Mi Note 5','','',NULL,NULL,NULL,0,1,NULL,NULL,NULL,NULL),(6,1,'Demo2','','',NULL,NULL,NULL,1,1,'2019-02-17 08:30:24',1,'2019-02-17 09:40:29.94',NULL),(7,1,'Iphone x','','',NULL,NULL,NULL,0,1,'2019-02-17 08:30:33',1,'2019-02-17 09:46:18.36','Not Required'),(8,18,'Ambuja Cement','','',NULL,NULL,NULL,1,1,'2019-02-18 16:54:32',NULL,NULL,NULL),(9,18,'Ultra Tech Cement','','',NULL,NULL,NULL,1,1,'2019-02-18 16:54:48',NULL,NULL,NULL),(10,20,'Monitor','','',NULL,NULL,NULL,1,1,'2019-02-19 07:56:05',NULL,NULL,NULL),(15,1,'Note 7','4GB','unit',2.5000,2.5000,0.0000,1,1,'2019-03-16 16:49:06',NULL,NULL,NULL);
 /*!40000 ALTER TABLE `product` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -233,27 +271,20 @@ DROP TABLE IF EXISTS `purchase_history`;
  SET character_set_client = utf8mb4 ;
 CREATE TABLE `purchase_history` (
   `purchaseId` int(11) NOT NULL AUTO_INCREMENT,
-  `productId` int(11) NOT NULL,
-  `quantityPurchased` int(11) NOT NULL,
-  `costPrice` decimal(15,2) NOT NULL,
-  `purchaseTimeStamp` timestamp NOT NULL,
   `dealerId` int(11) NOT NULL,
-  `createdBy` int(11) NOT NULL DEFAULT '1',
-  `createdOn` timestamp(2) NULL DEFAULT CURRENT_TIMESTAMP(2),
-  `updatedBy` int(11) DEFAULT NULL,
-  `updatedOn` timestamp(2) NULL DEFAULT NULL,
-  `reason` varchar(200) DEFAULT NULL,
-  `isActive` tinyint(1) NOT NULL DEFAULT '1',
+  `timeStamp` timestamp NULL DEFAULT NULL,
+  `vehicleNumber` varchar(255) DEFAULT NULL,
+  `labourCharges` decimal(10,4) DEFAULT NULL,
+  `amount` decimal(10,4) NOT NULL,
+  `netGst` decimal(10,4) DEFAULT NULL,
+  `totalAmount` decimal(10,4) NOT NULL,
+  `amountPaid` decimal(10,4) NOT NULL,
+  `balance` decimal(10,4) NOT NULL,
   PRIMARY KEY (`purchaseId`),
-  KEY `PurchaseCreated_User_FK_idx` (`createdBy`),
-  KEY `PurchaseUpdated_User_Fk_idx` (`updatedBy`),
-  KEY `Product_Purchase_FK_idx` (`productId`),
+  UNIQUE KEY `balance_UNIQUE` (`balance`),
   KEY `Purchase_Dealer_FK_idx` (`dealerId`),
-  CONSTRAINT `PurchaseCreated_User_FK` FOREIGN KEY (`createdBy`) REFERENCES `user` (`userId`),
-  CONSTRAINT `PurchaseUpdated_User_Fk` FOREIGN KEY (`updatedBy`) REFERENCES `user` (`userId`),
-  CONSTRAINT `Purchase_Dealer_FK` FOREIGN KEY (`dealerId`) REFERENCES `dealer` (`dealerId`),
-  CONSTRAINT `Purchase_Product_FK` FOREIGN KEY (`productId`) REFERENCES `product` (`productId`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  CONSTRAINT `Purchase_Dealer_FK` FOREIGN KEY (`dealerId`) REFERENCES `dealer` (`dealerId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -266,6 +297,39 @@ LOCK TABLES `purchase_history` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `purchase_product`
+--
+
+DROP TABLE IF EXISTS `purchase_product`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+ SET character_set_client = utf8mb4 ;
+CREATE TABLE `purchase_product` (
+  `purchase_productId` int(11) NOT NULL AUTO_INCREMENT,
+  `purchaseId` int(11) NOT NULL,
+  `productId` int(11) NOT NULL,
+  `quantityPurchased` int(11) NOT NULL,
+  `rate` decimal(10,4) DEFAULT NULL,
+  `availability` int(11) NOT NULL,
+  `cgst` decimal(10,4) DEFAULT NULL,
+  `sgst` decimal(10,4) DEFAULT NULL,
+  `igst` decimal(10,4) DEFAULT NULL,
+  PRIMARY KEY (`purchase_productId`),
+  KEY `Product_Purchase_FK_idx` (`productId`),
+  KEY `PurchaseProduct_Product_FK_idx` (`purchaseId`),
+  CONSTRAINT `Purchase_Product_FK` FOREIGN KEY (`productId`) REFERENCES `product` (`productId`)
+) ENGINE=InnoDB AUTO_INCREMENT=49 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `purchase_product`
+--
+
+LOCK TABLES `purchase_product` WRITE;
+/*!40000 ALTER TABLE `purchase_product` DISABLE KEYS */;
+/*!40000 ALTER TABLE `purchase_product` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `stock`
 --
 
@@ -275,21 +339,12 @@ DROP TABLE IF EXISTS `stock`;
 CREATE TABLE `stock` (
   `stockId` int(11) NOT NULL AUTO_INCREMENT,
   `productId` int(11) NOT NULL,
-  `quantityAvailable` int(11) NOT NULL,
-  `createdBy` int(11) NOT NULL DEFAULT '1',
-  `createdOn` timestamp(2) NULL DEFAULT CURRENT_TIMESTAMP(2),
-  `updatedBy` int(11) DEFAULT NULL,
-  `updatedOn` timestamp(2) NULL DEFAULT NULL,
-  `reason` varchar(200) DEFAULT NULL,
-  `isActive` tinyint(1) NOT NULL DEFAULT '1',
+  `quantity` int(11) DEFAULT NULL,
+  `quantityBlack` int(11) DEFAULT '0',
   PRIMARY KEY (`stockId`),
   KEY `Stock_Product_FK_idx` (`productId`),
-  KEY `StockCreation_User_FK_idx` (`createdBy`),
-  KEY `StockUpdation_USer_FK_idx` (`updatedBy`),
-  CONSTRAINT `StockCreation_User_FK` FOREIGN KEY (`createdBy`) REFERENCES `user` (`userId`),
-  CONSTRAINT `StockUpdation_USer_FK` FOREIGN KEY (`updatedBy`) REFERENCES `user` (`userId`),
   CONSTRAINT `Stock_Product_FK` FOREIGN KEY (`productId`) REFERENCES `product` (`productId`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -299,6 +354,35 @@ CREATE TABLE `stock` (
 LOCK TABLES `stock` WRITE;
 /*!40000 ALTER TABLE `stock` DISABLE KEYS */;
 /*!40000 ALTER TABLE `stock` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `transaction`
+--
+
+DROP TABLE IF EXISTS `transaction`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+ SET character_set_client = utf8mb4 ;
+CREATE TABLE `transaction` (
+  `transactionId` int(11) NOT NULL AUTO_INCREMENT,
+  `purchaseId` int(11) DEFAULT NULL,
+  `billId` int(11) DEFAULT NULL,
+  `dealerId` int(11) DEFAULT NULL,
+  `amountPay` decimal(10,4) DEFAULT NULL,
+  `modeOfPayment` varchar(255) DEFAULT NULL,
+  `transactionType` varchar(255) NOT NULL,
+  `timeStamp` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`transactionId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `transaction`
+--
+
+LOCK TABLES `transaction` WRITE;
+/*!40000 ALTER TABLE `transaction` DISABLE KEYS */;
+/*!40000 ALTER TABLE `transaction` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -452,6 +536,7 @@ In _dealerEmail varchar(100),In _dealerMobileNumber varchar(255),In _dealerPhone
 varchar(100),In _createdBy int(11)
 )
 BEGIN
+declare _dealerId int;
 DECLARE EXIT HANDLER FOR SQLEXCEPTION SELECT 'error' as status,'Cannot Add Dealer' as message;
 if  exists(select dealerUserName from dealer where dealerUserName=_dealerUserName)
 then
@@ -484,6 +569,8 @@ _dealerMobileNumber,
 _dealerPhoneNumber,
 _createdBy
 );
+set _dealerId= LAST_INSERT_ID();
+insert into outstanding(dealerId,debit,credit) values(_dealerID,0,0);
 SELECT 'success' AS status, 'Dealer Added Succesfully' AS message;
 END if;
 END ;;
@@ -502,7 +589,13 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `AddProduct`(In _productName varchar(100),In _categoryId int(11),In _createdBy int(11))
+CREATE DEFINER=`root`@`localhost` PROCEDURE `AddProduct`(In _productName varchar(100),In _categoryId int(11),
+In _variant varchar(100),
+In _unitOfMeasure varchar(100),
+In _cgstPercentage decimal(10,4),
+In _sgstPercentage decimal(10,4),
+In _igstPercentage decimal(10,4),
+In _createdBy int(11))
 BEGIN
 DECLARE EXIT HANDLER FOR SQLEXCEPTION SELECT 'error' as status,'Product Insertion Failed' as message;
 if  exists(select productId from `product` where productName=_productName && isActive=1)
@@ -517,9 +610,18 @@ INSERT INTO `product`
 (
 `productName`,
 `categoryId`,
+ variant,
+ unitOfMeasure,
+ cgstPercentage,
+ sgstPercentage,
+ igstPercentage,
 `createdBy`)
 VALUES
-(_productName,_categoryId,_createdBy);
+(_productName,_categoryId, _variant,
+ _unitOfMeasure,
+ _cgstPercentage,
+ _sgstPercentage,
+ _igstPercentage,_createdBy);
 SELECT 'success' AS status, 'Product Added Succesfully' AS message;
 END if;
 End ;;
@@ -538,22 +640,94 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `AddPurchase`(In _productId int(11),
-In _costPrice decimal(15,2),
-In _quantityPurchased int(11),
-In _purchaseTimeStamp timestamp,
-In _dealerId int(11),In _createdBy int(11))
+CREATE DEFINER=`root`@`localhost` PROCEDURE `AddPurchase`(In _dealerID int(11),
+In _vehicleNumber varchar(255),
+In _labourCharges decimal(10,4),
+In _amount decimal(10,4),
+In _netGst decimal(10,4),
+In _totalAmount decimal(10,4),
+In _amountPaid decimal(10,4),
+Out _purchaseId int(11)
+)
 BEGIN
-declare _StockId int;
 DECLARE EXIT HANDLER FOR SQLEXCEPTION SELECT 'error' as status,'Stock Addition Failed' as message;
-insert into purchase_history(productId,costPrice,purchaseTimeStamp,quantityPurchased,dealerId,createdBy) values(
-_productId,_costPrice,_purchaseTimeStamp,_quantityPurchased,_dealerId,_createdBy);
- if exists(select productId from stock where productId=_productId) then
- insert into stock(productId,quantityAvailable) values(_productId,_quantityPurchased);
- else
- update stock set quantityAvailable=quantityAvailable + quantityPurchased where productId=_productId;
- end if;
+insert into purchase_history(
+dealerID,
+vehicleNumber,
+labourCharges,
+amount,
+netGst,
+totalAmount,
+amountPaid,
+balance
+) 
+values(
+_dealerID,
+_vehicleNumber,
+_labourCharges,
+_amount,
+_netGst,
+_totalAmount,
+_amountPaid,
+_totalAmount - _amountPaid
+);
+set _purchaseId = last_insert_id();
 SELECT 'success' AS status, 'Stock Added Succesfully' AS message;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `AddPurchaseProduct` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `AddPurchaseProduct`(In _purchaseId int(11),In _productId int(11),
+In _quantityPurchased int(11),
+In _rate decimal(10,4),
+In _cgst decimal(10,4),
+In _sgst decimal(10,4),
+In _igst decimal(10,4)
+)
+BEGIN
+DECLARE EXIT HANDLER FOR SQLEXCEPTION SELECT 'error' as status,'Cannot Get GST' as message;
+insert into purchase_product(
+purchaseId,
+productId,
+quantityPurchased,
+rate,
+cgst,
+sgst,
+igst
+) values(
+_purchaseId,
+_productId,
+_quantityPurchased,
+_rate,
+_cgst,
+_sgst,
+_igst
+);
+if exists(select * from stock where productId=_productId) then
+if(_cgst=null && _sgst=null && _igst=null) then 
+update stock set  quantityBlack = quantityBlack + _quantityPurchased where productId=_productId;
+else
+update stock set  quantity = quantity + _quantityPurchased where productId=_productId;
+end if;
+else 
+if(_cgst=null && _sgst=null && _igst=null) then 
+insert into stock(productId,quantityBlack) values(_productId,quantity);
+else
+insert into stock(productId,quantity) values(_productId,quantity);
+end if;
+END if;
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -839,6 +1013,11 @@ DELIMITER ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `EditProduct`(In _productId int(11),In _productName varchar(100),In _categoryId int(11),
+In _variant varchar(100),
+In _unitOfMeasure varchar(100),
+In _cgstPercentage decimal(10,4),
+In _sgstPercentage decimal(10,4),
+In _igstPercentage decimal(10,4),
 In _reason varchar(200) ,In _updatedBy int(11))
 BEGIN
 DECLARE EXIT HANDLER FOR SQLEXCEPTION SELECT 'error' as status,'Product Updation Failed' as message;
@@ -848,6 +1027,11 @@ then
 SET
 `productName` = _productName,
 `categoryId`=_categoryId,
+variant = _variant,
+unitOfMeasure = _unitOfMeasure,
+cgstPercentage = _cgstPercentage,
+sgstPercentage = _sgstPercentage,
+igstPercentage = _igstPercentage,
 `updatedBy` = _updatedBy,
 `updatedOn` = current_timestamp(2),
 `reason` = _reason
@@ -1016,7 +1200,38 @@ DELIMITER ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `GetDealerById`(In _dealerId int(11))
 BEGIN
-select * from dealer where  _dealerId=_dealerId;
+select * from dealer where  dealerId=_dealerId;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `GETGST` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `GETGST`(In _productId int(11),In _price decimal(10,4), _quantity int(11),Out _cgst decimal(10,4),Out _sgst decimal(10,4),
+Out _igst decimal(10,4))
+BEGIN
+declare _cgstPercentage decimal(10,4);
+declare _sgstPercentage decimal(10,4);
+declare _igstPercentage decimal(10,4);
+declare _netPrice decimal(10.4);
+DECLARE EXIT HANDLER FOR SQLEXCEPTION SELECT 'error' as status,'Cannot Get GST' as message;
+set _netPrice = _quantity * _price;
+select  cgstPercentage into _cgstPercentage from product where productId = _productId;
+select  sgstPercentage into _sgstPercentage  from product where productId = _productId;
+select  igstPercentage into _igstPercentage  from product where productId = _productId;
+set _cgst =  _netPrice * _cgstPercentage * 0.01;
+set _sgst = _netPrice * _sgstPercentage * 0.01;
+set _igst = _netPrice * _igstPercentage * 0.01;
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -1133,6 +1348,99 @@ DELIMITER ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `ManageOutstandings` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `ManageOutstandings`(In _dealerId int(11),In _balance int(11),In _transcationType varchar(255))
+BEGIN
+Declare _credit decimal(10,4);
+Declare _debit decimal(10,4);
+declare _remainingAmount decimal(10,4);
+DECLARE EXIT HANDLER FOR SQLEXCEPTION SELECT 'error' as status,'Cannot Manage Outstandings' as message;
+SELECT 
+    credit
+INTO _credit FROM
+    outstanding
+WHERE
+    dealerId = _dealerId;
+SELECT 
+    debit
+INTO _debit FROM
+    outstanding
+WHERE
+    dealerId = _dealerId;
+if(_transactionType='debit') then 
+if(_credit>0) then 
+set _remainingAmount = _credit - _balance;
+if(_remainingAmount<0) then 
+update outstandings set debit = debit + abs(_remainingAmount);
+UPDATE outstandings 
+SET 
+    credit = 0;
+else
+update outstandings set credit = _remainingAmount where dealerId=_delareId;
+end if;
+else 
+update outstandings set debit = _debit + _balance where dealerId= _dealerID;
+end if;
+else
+if(_debit>0) then 
+set _remainingAmount = _debit - _balance;
+if(_remainingAmount<0) then 
+update outstandings set credit = credit + abs(_remainingAmount);
+UPDATE outstandings 
+SET 
+    debit = 0;
+else
+update  outstanding set debit = _remainingAmount where dealerId=_delareId;
+end if;
+else 
+update outstandings set credit = _credit + _balance where dealerId= _dealerID;
+end if;
+end if;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `ManageTransaction` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `ManageTransaction`(In _recordId int(11),In _dealerId int(11),In _amountPay decimal(10.4) ,
+In _modeOfPayment varchar(255),In _transactionType varchar(255))
+BEGIN
+DECLARE EXIT HANDLER FOR SQLEXCEPTION SELECT 'error' as status,'Transaction Failed' as message;
+if(_transactionType='Purchase') then 
+insert into transaction(purchaseId,dealerId,amountPay,modeOfPayment,transactionType) values(_recordId,_dealerId,
+_amountPay,_modeOfPayment,_transactionType);
+elseif(_transactionType='Sell') then 
+insert into transaction(billId,dealerId,amountPay,modeOfPayment,transactionType) values(_recordId,_dealerId,
+_amountPay,_modeOfPayment,_transactionType);
+else
+insert into transaction(dealerId,amountPay,modeOfPayment,transactionType) values( _dealerId,
+_amountPay,_modeOfPayment,_transactionType);
+end if;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -1143,4 +1451,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-03-16 15:44:23
+-- Dump completed on 2019-03-18  0:38:04
