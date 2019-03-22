@@ -61,22 +61,23 @@ module.exports.GetPurchaseById = (req, res) => {
 
 module.exports.AddPurchase = async(req, res) => {
     try {
-        console.log(req.body);
-        let purchaseId;
+        console.log('Add Purchase',req.body);
+        var purchaseId=12;
         let dealerId = req.body.dealerId;
         let vehicleNumber = req.body.vehicleNumber;
         let labourCharges = req.body.labourCharges;
         let purchaseArray = req.body.purchaseArray;
-        let amount = req.body.amount;
-        let netGst = req.body.netGst;
-        let totalAmount = req.body.totalAmount;
-        let amountPaid = req.body.amountPaid;
+        let amount = req.body.totalAmount;
+        let netGst = 1000;
+        let totalAmount = amount + netGst;
+        let amountPaid = 100;
         let balance = amount - amountPaid;
-        let modeofPayment = req.body.modeofPayment;
+        let modeofPayment = 'Cash';
 
-        var sql = `call AddPurchase(${dealerId},${vehicleNumber},${labourCharges},
-            ${amount},${netGst},${totalAmount},${amountPaid},${purchaseId})`;
+        var sql = `call AddPurchase(${dealerId},'${vehicleNumber}',
+        ${labourCharges},${amount},${netGst},${totalAmount},${amountPaid},@${purchaseId})`;
             await dbQuery(sql);
+           console.log('Purchase Id',purchaseId);
       /*  db.query(sql, (err, result) => {
             if (err) {
                 console.log(err);
@@ -101,11 +102,13 @@ module.exports.AddPurchase = async(req, res) => {
         ]
         */
        
+       /*
         purchaseArray.map(async (product) => {
-            var sql = `call AddPurchaseProduct(${purchaseId},${product.productId},${product.quantity},
+            var sql1 = `call AddPurchaseProduct(${purchaseId},${product.productId},${product.quantity},
                 ${product.rate},${product.cgst},${product.sgst},${product.igst}})`;
-                await dbQuery(sql);
-               /* db.query(sql, (err, result) => {
+                console.log('I am In');
+                await dbQuery(sql1);
+                db.query(sql, (err, result) => {
                     if (err) {
                         console.log(err);
                         res.status(400).send('Failure Hogya Bawa');
@@ -114,12 +117,14 @@ module.exports.AddPurchase = async(req, res) => {
                         console.log(result);
                     
                     }
-                })*/
+                })
         })
-        
+        */
         if(amountPaid>0){
-        var transactionSql = `call ManageTransaction(${purchaseId},${dealerId},${amountPaid},${modeofPayment},'Purchase')`;
+            console.log('Amount Paid >0');
+        var transactionSql = `call ManageTransaction(${purchaseId},${dealerId},${amountPaid},'${modeofPayment}','Purchase')`;
         await dbQuery(transactionSql);
+
        /*db.query(transactionSql, (err, result) => {
             if (err) {
                 console.log(err);
@@ -210,10 +215,12 @@ function dbQuery(sqlQuery){
         db.query(sqlQuery,(err,result)=>{
             if(err){
                 console.log(err);
+                //console.log('Purchase Id',purchaseId);
                 reject(err);
             }
             else{
                 console.log(result);
+               // console.log('Purchase Id :- ',purchaseId);
                 resolve(result);
             }
         })
