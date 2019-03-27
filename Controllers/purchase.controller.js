@@ -66,7 +66,7 @@ module.exports.AddPurchase = async(req, res) => {
         let dealerId = req.body.dealerId;
         let vehicleNumber = req.body.vehicleNumber;
         let labourCharges = req.body.labourCharges;
-        let purchaseArray = req.body.purchaseArray;
+        let purchaseArray = req.body.products;
         let amount = req.body.totalAmount;
         let netGst = 1000;
         let totalAmount = amount + netGst;
@@ -75,9 +75,10 @@ module.exports.AddPurchase = async(req, res) => {
         let modeofPayment = 'Cash';
 
         var sql = `call AddPurchase(${dealerId},'${vehicleNumber}',
-        ${labourCharges},${amount},${netGst},${totalAmount},${amountPaid},@${purchaseId})`;
-            await dbQuery(sql);
-           console.log('Purchase Id',purchaseId);
+        ${labourCharges},${amount},${netGst},${totalAmount},${amountPaid})`;
+           const result= await dbQuery(sql);
+           console.log('Purchase Id',result[0][0].purchaseID);
+           purchaseId = result[0][0].purchaseID;
       /*  db.query(sql, (err, result) => {
             if (err) {
                 console.log(err);
@@ -102,24 +103,24 @@ module.exports.AddPurchase = async(req, res) => {
         ]
         */
        
-       /*
+       console.log('Amount Paid',amountPaid);
         purchaseArray.map(async (product) => {
-            var sql1 = `call AddPurchaseProduct(${purchaseId},${product.productId},${product.quantity},
-                ${product.rate},${product.cgst},${product.sgst},${product.igst}})`;
+            var sql1 = `call AddPurchaseProduct(${purchaseId},${product.productId},${product.quantityPurchased},
+                ${product.costPrice},${100},${100},${100})`;
                 console.log('I am In');
                 await dbQuery(sql1);
-                db.query(sql, (err, result) => {
-                    if (err) {
-                        console.log(err);
-                        res.status(400).send('Failure Hogya Bawa');
-                    }
-                    else {
-                        console.log(result);
+                // db.query(sql, (err, result) => {
+                //     if (err) {
+                //         console.log(err);
+                //         res.status(400).send('Failure Hogya Bawa');
+                //     }
+                //     else {
+                //         console.log(result);
                     
-                    }
-                })
+                //     }
+                // })
         })
-        */
+        
         if(amountPaid>0){
             console.log('Amount Paid >0');
         var transactionSql = `call ManageTransaction(${purchaseId},${dealerId},${amountPaid},'${modeofPayment}','Purchase')`;
@@ -137,8 +138,8 @@ module.exports.AddPurchase = async(req, res) => {
         })*/
        }
        if(balance>0){
-        var outstandingSQl = `call ManageOutstandings(${dealerId},${balance},'debit')`;
-        await dbQuery(outstandingSQl)
+        // var outstandingSQl = `call ManageOutstandings(${dealerId},${balance},'debit')`;
+        // await dbQuery(outstandingSQl)
         /* db.query(outstandingSQl, (err, result) => {
             if (err) {
                 console.log(err);
@@ -152,6 +153,7 @@ module.exports.AddPurchase = async(req, res) => {
        }
     }
     catch (e) {
+        console.log('Error',e);
         res.status(400).send('Error');
     }
 }
