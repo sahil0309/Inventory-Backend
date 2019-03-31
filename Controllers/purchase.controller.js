@@ -36,24 +36,27 @@ module.exports.GetStockReport = function (req, res) {
     }
 }
 
-module.exports.GetPurchaseById = (req, res) => {
+module.exports.GetPurchaseById = async(req, res) => {
     try {
 
-        let PurchaseID = req.params.id;
-        console.log('Params', req.params);
-        var sql = `call GetPurchaseById(${PurchaseID})`;
-        db.query(sql, (err, result) => {
-            if (err) {
-                console.log(err);
-                res.status(400).send('Failure Hogya Bawa');
-            }
-            else {
-                console.log(result);
-                res.status(200).json(result[0][0]);
-            }
+        let purchaseID = req.params.id;
+        console.log(purchaseID);
+        var sql = `call GetPurchaseById(${purchaseID})`;
+        let result = await dbQuery(sql);
+
+        console.log('Result ',result);
+        let purchase=console.log('Purchase',result[0]);
+        var sql2=`call GetProductsPurchase(${purchaseID})`;
+        let purchaseArray= await dbQuery(sql2)[0];
+        console.log('Purchase Array',purchaseArray);
+        res.send({
+            purchase:purchase,
+            purchaseArray:purchaseArray
         })
+     
     }
     catch (e) {
+        console.log('Error',e);
         res.status(400).send('Error');
     }
 }
@@ -106,6 +109,7 @@ module.exports.AddPurchase = async(req, res) => {
         res.status(400).send('Error');
     }
 }
+
 
 module.exports.EditPurchase = async(req, res) => {
     try {
