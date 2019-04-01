@@ -43,17 +43,18 @@ module.exports.GetPurchaseById = async (req, res) => {
         console.log(purchaseID);
         var sql = `call GetPurchaseById(${purchaseID})`;
         let result = await dbQuery(sql);
-
         console.log('Result ', result);
-        let purchase = console.log('Purchase', result[0]);
+        let purchase = result[0][0];
+        console.log('Purchase', purchase);
         var sql2 = `call GetProductsPurchase(${purchaseID})`;
-        let purchaseArray = await dbQuery(sql2)[0];
+        let result2 = await dbQuery(sql2);
+        let purchaseArray=result2[0];
         console.log('Purchase Array', purchaseArray);
         res.send({
             purchase: purchase,
-            purchaseArray: purchaseArray
+            purchaseArray:purchaseArray
         });
-        console.log("sent");
+       
 
     }
     catch (e) {
