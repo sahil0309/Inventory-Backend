@@ -1499,7 +1499,7 @@ DELIMITER ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `GetProductsPurchase`(_purchaseId int(11))
 BEGIN
-select pp.*,p.cgstPercentage,p.sgstPercentage,p.igstPercentage 
+select pp.*,p.productName,p.cgstPercentage,p.sgstPercentage,p.igstPercentage 
 from purchase_product pp  join product p 
 on pp.productId = p.productId
 where purchaseId=_purchaseId;
@@ -1767,4 +1767,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-04-01 19:14:09
+-- Dump completed on 2019-04-01 23:55:12

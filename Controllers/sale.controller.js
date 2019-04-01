@@ -2,8 +2,19 @@ const db = require('../DB');
 
 module.exports.AddSale = async (req, res) => {
     try {
-        let mode = req.body.mode;
+        console.log('Add Purchase', req.body);
+        var billId = 12;
+        let dealerId = req.body.dealerId;
+        let vehicleNumber = req.body.vehicleNumber;
+        let labourCharges = req.body.labourCharges;
         let productsArray = req.body.products;
+        let amount = req.body.totalAmount;
+        let netGst = 100;
+        let totalAmount = amount + netGst;
+        let amountPaid = 500;
+        let balance = totalAmount - amountPaid;
+        let modeofPayment = 'Cash';
+
 
         productsArray.map(async (product) => {
             let quantityPurchased = product.quantityPurchased;

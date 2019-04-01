@@ -48,13 +48,35 @@ module.exports.GetPurchaseById = async (req, res) => {
         console.log('Purchase', purchase);
         var sql2 = `call GetProductsPurchase(${purchaseID})`;
         let result2 = await dbQuery(sql2);
-        let purchaseArray=result2[0];
+        let purchaseArray = result2[0];
         console.log('Purchase Array', purchaseArray);
-        res.send({
-            purchase: purchase,
-            purchaseArray:purchaseArray
+        products = [];
+        purchaseArray.forEach(element => {
+            let obj = {
+                cgst: element.cgst,
+                sgst: element.sgst,
+                igst: element.igst,
+                cgstPercentage: element.cgstPercentage,
+                sgstPercentage: element.sgstPercentage,
+                igstPercentage: element.igstPercentage,
+                quantityPurchased: element.quantityPurchased,
+                costPrice: element.rate,
+                totalPrice: element.rate * element.quantityPurchased
+            }
+            products.push(obj);
         });
-       
+        let obj = {
+            dealerId: purchase.dealerId,
+            amountPaid: purchase.amountPaid,
+            labourCharges: purchase.labourCharges,
+            modeofPayment: "Cash",
+            purchaseId: purchase.purchaseId,
+            purchaseTimeStamp: new Date(),
+            totalAmount: purchase.totalAmount,
+            products: products
+        }
+        res.send(obj);
+
 
     }
     catch (e) {
