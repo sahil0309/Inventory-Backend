@@ -36,7 +36,7 @@ module.exports.GetStockReport = function (req, res) {
     }
 }
 
-module.exports.GetPurchaseById = async(req, res) => {
+module.exports.GetPurchaseById = async (req, res) => {
     try {
 
         let purchaseID = req.params.id;
@@ -44,27 +44,28 @@ module.exports.GetPurchaseById = async(req, res) => {
         var sql = `call GetPurchaseById(${purchaseID})`;
         let result = await dbQuery(sql);
 
-        console.log('Result ',result);
-        let purchase=console.log('Purchase',result[0]);
-        var sql2=`call GetProductsPurchase(${purchaseID})`;
-        let purchaseArray= await dbQuery(sql2)[0];
-        console.log('Purchase Array',purchaseArray);
+        console.log('Result ', result);
+        let purchase = console.log('Purchase', result[0]);
+        var sql2 = `call GetProductsPurchase(${purchaseID})`;
+        let purchaseArray = await dbQuery(sql2)[0];
+        console.log('Purchase Array', purchaseArray);
         res.send({
-            purchase:purchase,
-            purchaseArray:purchaseArray
-        })
-     
+            purchase: purchase,
+            purchaseArray: purchaseArray
+        });
+        console.log("sent");
+
     }
     catch (e) {
-        console.log('Error',e);
+        console.log('Error', e);
         res.status(400).send('Error');
     }
 }
 
-module.exports.AddPurchase = async(req, res) => {
+module.exports.AddPurchase = async (req, res) => {
     try {
-        console.log('Add Purchase',req.body);
-        var purchaseId=12;
+        console.log('Add Purchase', req.body);
+        var purchaseId = 12;
         let dealerId = req.body.dealerId;
         let vehicleNumber = req.body.vehicleNumber;
         let labourCharges = req.body.labourCharges;
@@ -78,43 +79,43 @@ module.exports.AddPurchase = async(req, res) => {
 
         var sql = `call AddPurchase(${dealerId},'${vehicleNumber}',
         ${labourCharges},${amount},${netGst},${totalAmount},${amountPaid})`;
-           const result= await dbQuery(sql);
-           console.log('Purchase Id',result[0][0].purchaseID);
-           purchaseId = result[0][0].purchaseID;
+        const result = await dbQuery(sql);
+        console.log('Purchase Id', result[0][0].purchaseID);
+        purchaseId = result[0][0].purchaseID;
 
         purchaseArray.map(async (product) => {
             let sql1 = `call AddPurchaseProduct(${purchaseId},${product.productId},${product.quantityPurchased},
                 ${product.costPrice},${100},${100},${100})`;
-                await dbQuery(sql1);
-            let sql2 =`call ManageStock(${product.productId},${product.quantityPurchased},'Normal','Add')`;
-                await dbQuery(sql2);
+            await dbQuery(sql1);
+            let sql2 = `call ManageStock(${product.productId},${product.quantityPurchased},'Normal','Add')`;
+            await dbQuery(sql2);
         })
-        
-        if(amountPaid>0){
-        var transactionSql = `call ManageTransaction(${purchaseId},${dealerId},${amountPaid},'${modeofPayment}','Purchase')`;
-        await dbQuery(transactionSql);
-       }
-       if(balance>0){
-         var outstandingSQl = `call ManageOutstandings(${dealerId},${balance},'Owe')`;
-         await dbQuery(outstandingSQl)
-       }
 
-       res.send({
-           status:'Success',
-           message:'Purchase Successful'
-       })
+        if (amountPaid > 0) {
+            var transactionSql = `call ManageTransaction(${purchaseId},${dealerId},${amountPaid},'${modeofPayment}','Purchase')`;
+            await dbQuery(transactionSql);
+        }
+        if (balance > 0) {
+            var outstandingSQl = `call ManageOutstandings(${dealerId},${balance},'Owe')`;
+            await dbQuery(outstandingSQl)
+        }
+
+        res.send({
+            status: 'Success',
+            message: 'Purchase Successful'
+        })
     }
     catch (e) {
-        console.log('Error',e);
+        console.log('Error', e);
         res.status(400).send('Error');
     }
 }
 
 
-module.exports.EditPurchase = async(req, res) => {
+module.exports.EditPurchase = async (req, res) => {
     try {
-        console.log('Edit Purchase',req.body);
-        var purchaseId=req.body.purchaseId;
+        console.log('Edit Purchase', req.body);
+        var purchaseId = req.body.purchaseId;
         let dealerId = req.body.dealerId;
         let vehicleNumber = req.body.vehicleNumber;
         let labourCharges = req.body.labourCharges;
@@ -128,44 +129,44 @@ module.exports.EditPurchase = async(req, res) => {
 
         var sql = `call EditPurchase(${purchaseId},${dealerId},'${vehicleNumber}',
         ${labourCharges},${amount},${netGst},${totalAmount},${amountPaid})`;
-             await dbQuery(sql);
+        await dbQuery(sql);
 
-        var sql2=`call GetProductsPurchase(${purchaseId})`;
+        var sql2 = `call GetProductsPurchase(${purchaseId})`;
         let result = await dbQuery(sql2)[0][0];
         console.log(result);
         let prevProductsArray = result[0][0];
         console.log(prevProductsArray);
-        prevProductsArray.map(async (product)=>{
+        prevProductsArray.map(async (product) => {
             let sql = `call ManageStock(${product.productId},${product.quantityPurchased},'Normal','Subtract')`;
             await dbQuery(sql);
         })
-        
+
         var sql3 = `call DeletePurchaseProducts(${purchaseId})`;
         await dbQuery(sql3);
 
         purchaseArray.map(async (product) => {
             let sql1 = `call AddPurchaseProduct(${purchaseId},${product.productId},${product.quantityPurchased},
                 ${product.costPrice},${100},${100},${100})`;
-                await dbQuery(sql1);
-           
-        })
-        
-        if(amountPaid>0){
-        var transactionSql = `call ManageTransaction(${purchaseId},${dealerId},${amountPaid},'${modeofPayment}','Purchase')`;
-        await dbQuery(transactionSql);
-       }
-       if(balance>0){
-         var outstandingSQl = `call ManageOutstandings(${dealerId},${balance},'Owe')`;
-         await dbQuery(outstandingSQl)
-       }
+            await dbQuery(sql1);
 
-       res.send({
-           status:'Success',
-           message:'Purchase Updation Successful'
-       })
+        })
+
+        if (amountPaid > 0) {
+            var transactionSql = `call ManageTransaction(${purchaseId},${dealerId},${amountPaid},'${modeofPayment}','Purchase')`;
+            await dbQuery(transactionSql);
+        }
+        if (balance > 0) {
+            var outstandingSQl = `call ManageOutstandings(${dealerId},${balance},'Owe')`;
+            await dbQuery(outstandingSQl)
+        }
+
+        res.send({
+            status: 'Success',
+            message: 'Purchase Updation Successful'
+        })
     }
     catch (e) {
-        console.log('Error',e);
+        console.log('Error', e);
         res.status(400).send('Error');
     }
 }
@@ -193,17 +194,17 @@ module.exports.DeletePurchase = (req, res) => {
     }
 }
 
-function dbQuery(sqlQuery){
-    return new Promise((resolve,reject)=>{
-        db.query(sqlQuery,(err,result)=>{
-            if(err){
+function dbQuery(sqlQuery) {
+    return new Promise((resolve, reject) => {
+        db.query(sqlQuery, (err, result) => {
+            if (err) {
                 console.log(err);
                 //console.log('Purchase Id',purchaseId);
                 reject(err);
             }
-            else{
+            else {
                 console.log(result);
-               // console.log('Purchase Id :- ',purchaseId);
+                // console.log('Purchase Id :- ',purchaseId);
                 resolve(result);
             }
         })
