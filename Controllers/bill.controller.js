@@ -45,8 +45,8 @@ module.exports.AddBill = async (req, res) => {
                         quantityPurchased = quantityPurchased - quantity;
                     }
                 }
-                else
-                    break;
+                // else
+                    // break;
             });
 
 

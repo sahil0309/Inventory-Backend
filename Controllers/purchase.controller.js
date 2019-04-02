@@ -53,13 +53,15 @@ module.exports.GetPurchaseById = async (req, res) => {
         products = [];
         purchaseArray.forEach(element => {
             let obj = {
-                cgst: element.cgst,
-                sgst: element.sgst,
-                igst: element.igst,
+                cgst: element.cgst * element.quantityPurchased,
+                sgst: element.sgst * element.quantityPurchased,
+                igst: element.igst * element.quantityPurchased,
                 cgstPercentage: element.cgstPercentage,
                 sgstPercentage: element.sgstPercentage,
                 igstPercentage: element.igstPercentage,
                 quantityPurchased: element.quantityPurchased,
+                productName: element.productName,
+                productId: element.purchaseId,
                 costPrice: element.rate,
                 totalPrice: element.rate * element.quantityPurchased
             }
@@ -73,7 +75,7 @@ module.exports.GetPurchaseById = async (req, res) => {
             purchaseId: purchase.purchaseId,
             purchaseTimeStamp: new Date(),
             totalAmount: purchase.totalAmount,
-            vehicleNumber:purchase.vehicleNumber,
+            vehicleNumber: purchase.vehicleNumber,
             products: products
         }
         res.send(obj);
