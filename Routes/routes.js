@@ -8,6 +8,7 @@ const category_controller = require('../Controllers/category.controller');
 const purchase_controller = require('../Controllers/purchase.controller');
 const dealer_controller =  require('../Controllers/dealer.controller');
 const customer_controller = require('../Controllers/customer.controller');
+const bill_controller = require('../Controllers/bill.controller');
 
 // a simple test url to check that all of our files are communicating correctly.
 router.get('/product', product_controller.GetProduct);
@@ -48,5 +49,8 @@ router.post('/customer',customer_controller.AddCustomer);
 router.put('/customer',customer_controller.EditCustomer);
 router.delete('/customer',customer_controller.DeleteCustomer);
 
+// Bill Routes
+
+router.post('/bill',bill_controller.AddBill);
 
 module.exports = router;

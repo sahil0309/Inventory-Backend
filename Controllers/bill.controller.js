@@ -1,8 +1,8 @@
 const db = require('../DB');
 
-module.exports.AddSale = async (req, res) => {
+module.exports.AddBill = async (req, res) => {
     try {
-        console.log('Add Purchase', req.body);
+        console.log('Add Bill', req.body);
         var billId = 12;
         let dealerId = req.body.dealerId;
         let vehicleNumber = req.body.vehicleNumber;
@@ -15,8 +15,14 @@ module.exports.AddSale = async (req, res) => {
         let balance = totalAmount - amountPaid;
         let modeofPayment = 'Cash';
 
+        var sql = `call AddBill(${dealerId},'${vehicleNumber}',
+        ${labourCharges},${amount},${netGst},${totalAmount},${amountPaid})`;
+        const result = await dbQuery(sql);
+        console.log('Bill Id', result[0][0].billId);
+        billId = result[0][0].billId;
 
         productsArray.map(async (product) => {
+           
             let quantityPurchased = product.quantityPurchased;
             let GetPurchaseAvailability = `call GetPurchaseAvailability(${product.productId},'Normal')`;
             let result = dbQuery(GetPurchaseAvailability);
@@ -43,6 +49,11 @@ module.exports.AddSale = async (req, res) => {
                     break;
             });
 
+
+            let sql1 = `call AddPurchaseProduct(${billId},${product.productId},${product.quantityPurchased},
+                ${costPrice},${product.totalSellingPrice},${100},${100},${100})`;
+            await dbQuery(sql1);
+
             let sql2 = `call ManageStock(${product.productId},${product.quantityPurchased},'Normal','Subtract')`;
             await dbQuery(sql2);
         })
@@ -64,8 +75,6 @@ module.exports.AddSale = async (req, res) => {
     catch (e) {
         console.log('Exception', e)
     }
-
-
 }
 
 function dbQuery(sqlQuery) {
