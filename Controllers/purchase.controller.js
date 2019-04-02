@@ -69,10 +69,11 @@ module.exports.GetPurchaseById = async (req, res) => {
             dealerId: purchase.dealerId,
             amountPaid: purchase.amountPaid,
             labourCharges: purchase.labourCharges,
-            modeofPayment: "Cash",
+            modeOfPayment: "Cash",
             purchaseId: purchase.purchaseId,
             purchaseTimeStamp: new Date(),
             totalAmount: purchase.totalAmount,
+            vehicleNumber:purchase.vehicleNumber,
             products: products
         }
         res.send(obj);
@@ -94,7 +95,7 @@ module.exports.AddPurchase = async (req, res) => {
         let labourCharges = req.body.labourCharges;
         let purchaseArray = req.body.products;
         let amount = req.body.totalAmount;
-        let netGst = 100;
+        let netGst = req.body.netGST;
         let totalAmount = amount + netGst;
         let amountPaid = 500;
         let balance = totalAmount - amountPaid;
