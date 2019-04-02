@@ -149,7 +149,7 @@ module.exports.EditPurchase = async (req, res) => {
         let amount = req.body.totalAmount;
         let netGst = 1000;
         let totalAmount = amount + netGst;
-        let amountPaid = 100;
+        let amountPaid = 1000;
         let balance = totalAmount - amountPaid;
         let modeofPayment = 'Cash';
 
@@ -158,10 +158,10 @@ module.exports.EditPurchase = async (req, res) => {
         await dbQuery(sql);
 
         var sql2 = `call GetProductsPurchase(${purchaseId})`;
-        let result = await dbQuery(sql2)[0][0];
+        let result = await dbQuery(sql2);
         console.log(result);
-        let prevProductsArray = result[0][0];
-        console.log(prevProductsArray);
+        let prevProductsArray = result[0];
+        console.log('Prev Product Array ',prevProductsArray);
         prevProductsArray.map(async (product) => {
             let sql = `call ManageStock(${product.productId},${product.quantityPurchased},'Normal','Subtract')`;
             await dbQuery(sql);
@@ -171,9 +171,13 @@ module.exports.EditPurchase = async (req, res) => {
         await dbQuery(sql3);
 
         purchaseArray.map(async (product) => {
-            let sql1 = `call AddPurchaseProduct(${purchaseId},${product.productId},${product.quantityPurchased},
+            console.log('Product',product);
+            let sql1 = `call AddPurchaseProduct(${purchaseId},${16},${product.quantityPurchased},
                 ${product.costPrice},${100},${100},${100})`;
             await dbQuery(sql1);
+
+            let sql = `call ManageStock(${product.productId},${product.quantityPurchased},'Normal','Add')`;
+            await dbQuery(sql);
 
         })
 
