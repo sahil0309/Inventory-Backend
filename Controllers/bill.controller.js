@@ -50,7 +50,7 @@ module.exports.AddBill = async (req, res) => {
             });
 
 
-            let sql1 = `call AddPurchaseProduct(${billId},${product.productId},${product.quantityPurchased},
+            let sql1 = `call AddBillProduct(${billId},${product.productId},${product.quantityPurchased},
                 ${costPrice},${product.totalSellingPrice},${100},${100},${100})`;
             await dbQuery(sql1);
 
