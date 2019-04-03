@@ -25,22 +25,24 @@ module.exports.AddBill = async (req, res) => {
            
             let quantityPurchased = product.quantityPurchased;
             let GetPurchaseAvailability = `call GetPurchaseAvailability(${product.productId},'Normal')`;
-            let result = dbQuery(GetPurchaseAvailability);
+            let result = await dbQuery(GetPurchaseAvailability);
+            console.log('Result',result);
             let availabilityArray = result[0];
+          console.log('Availability Array',availabilityArray);
             let costPrice = 0;
-            availabilityArray.forEach(availablePurchase => {
+            availabilityArray.forEach(async (availablePurchase) => {
                 if (quantityPurchased > 0) {
                     let quantity = availablePurchase.availability;
                     if (quantity >= quantityPurchased) {
                         costPrice = costPrice + quantityPurchased * availablePurchase.rate;
-                        let sql = `call ManagePurchaseAvailablity(${availablePurchase.purchase_productId},${quantityPurchased},
+                        let sql = `call ManagePurchaseAvailability(${availablePurchase.purchase_productId},${quantityPurchased},
                            'Subtract')`;
-                        dbQuery(sql);
+                        await dbQuery(sql);
                         quantityPurchased = 0;
                     }
                     else {
-                        let sql = `call ManagePurchaseAvailablity(${availablePurchase.purchase_productId},${quantity},'Subtract')`;
-                        dbQuery(sql);
+                        let sql = `call ManagePurchaseAvailability(${availablePurchase.purchase_productId},${quantity},'Subtract')`;
+                        await dbQuery(sql);
                         costPrice = costPrice + quantityPurchased * availablePurchase.rate;
                         quantityPurchased = quantityPurchased - quantity;
                     }
@@ -59,12 +61,12 @@ module.exports.AddBill = async (req, res) => {
         })
 
         if (amountPaid > 0) {
-            var transactionSql = `call ManageTransaction(${sellId},${dealerId},${amountPaid},'${modeofPayment}','Sell')`;
+            var transactionSql = `call ManageTransaction(${billId},${dealerId},${amountPaid},'${modeofPayment}','Sell')`;
             await dbQuery(transactionSql);
         }
         if (balance > 0) {
             var outstandingSQl = `call ManageOutstandings(${dealerId},${balance},'Recieve')`;
-            await dbQuery(outstandingSQl)
+            await dbQuery(outstandingSQl);
         }
 
         res.send({
@@ -77,7 +79,7 @@ module.exports.AddBill = async (req, res) => {
     }
 }
 
-function dbQuery(sqlQuery) {
+async function dbQuery(sqlQuery) {
     return new Promise((resolve, reject) => {
         db.query(sqlQuery, (err, result) => {
             if (err) {
