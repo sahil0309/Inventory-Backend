@@ -101,7 +101,7 @@ module.exports.AddPurchase = async (req, res) => {
         let totalAmount = amount + netGst;
         let amountPaid = 500;
         let balance = totalAmount - amountPaid;
-        let modeofPayment = 'Cash';
+        let modeofPayment = req.body.modeOfPayment;
 
         var sql = `call AddPurchase(${dealerId},'${vehicleNumber}',
         ${labourCharges},${amount},${netGst},${totalAmount},${amountPaid})`;

@@ -13,7 +13,7 @@ module.exports.AddBill = async (req, res) => {
         let totalAmount = amount + netGst;
         let amountPaid = 500;
         let balance = totalAmount - amountPaid;
-        let modeofPayment = req.body.modeofPayment;
+        let modeofPayment = req.body.modeOfPayment;
 
         var sql = `call AddBill(${dealerId},'${vehicleNumber}',
         ${labourCharges},${amount},${netGst},${totalAmount},${amountPaid})`;
