@@ -27,17 +27,18 @@ DROP TABLE IF EXISTS `bill`;
 CREATE TABLE `bill` (
   `billId` int(11) NOT NULL AUTO_INCREMENT,
   `dealerId` int(11) NOT NULL,
-  `timeStamp` timestamp NOT NULL,
-  `totalAmount` decimal(10,4) NOT NULL,
+  `timeStamp` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `amountPaid` decimal(10,4) NOT NULL,
   `labourCharges` decimal(10,4) DEFAULT NULL,
   `vehicleNumber` varchar(255) DEFAULT NULL,
-  `paidAmount` decimal(10,4) NOT NULL,
+  `amount` decimal(10,4) NOT NULL,
+  `netGst` decimal(10,4) DEFAULT NULL,
+  `totalAmount` decimal(10,4) NOT NULL,
   `balance` decimal(10,4) NOT NULL DEFAULT '0.0000',
   PRIMARY KEY (`billId`),
   KEY `Bill_User_FK_idx` (`dealerId`),
-  CONSTRAINT `BIll_Dealer_FK` FOREIGN KEY (`dealerId`) REFERENCES `dealer` (`dealerId`),
-  CONSTRAINT `Bill_User_FK` FOREIGN KEY (`dealerId`) REFERENCES `customer` (`customerId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  CONSTRAINT `BIll_Dealer_FK` FOREIGN KEY (`dealerId`) REFERENCES `dealer` (`dealerId`)
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -46,6 +47,7 @@ CREATE TABLE `bill` (
 
 LOCK TABLES `bill` WRITE;
 /*!40000 ALTER TABLE `bill` DISABLE KEYS */;
+INSERT INTO `bill` VALUES (4,6,'2019-04-03 11:09:20',500.0000,1000.0000,'MH 01 AB 1234',2000.0000,300.0000,2300.0000,1800.0000),(5,6,'2019-04-03 11:10:43',500.0000,1000.0000,'MH 01 AB 1234',2000.0000,300.0000,2300.0000,1800.0000),(6,6,'2019-04-03 11:14:46',500.0000,1000.0000,'MH 01 AB 1234',2000.0000,300.0000,2300.0000,1800.0000),(7,6,'2019-04-03 11:15:41',500.0000,1000.0000,'MH 01 AB 1234',2000.0000,300.0000,2300.0000,1800.0000),(8,6,'2019-04-03 11:22:36',500.0000,1000.0000,'MH 01 AB 1234',2000.0000,300.0000,2300.0000,1800.0000),(9,6,'2019-04-03 11:28:27',500.0000,1000.0000,'MH 01 AB 1234',2000.0000,300.0000,2300.0000,1800.0000),(10,6,'2019-04-03 11:33:10',500.0000,1000.0000,'MH 01 AB 1234',2000.0000,300.0000,2300.0000,1800.0000),(11,6,'2019-04-03 11:34:23',500.0000,1000.0000,'MH 01 AB 1234',2000.0000,300.0000,2300.0000,1800.0000),(12,6,'2019-04-03 11:35:52',500.0000,1000.0000,'MH 01 AB 1234',2000.0000,300.0000,2300.0000,1800.0000),(13,6,'2019-04-03 11:41:43',500.0000,1000.0000,'MH 01 AB 1234',2000.0000,300.0000,2300.0000,1800.0000),(14,6,'2019-04-04 15:06:22',500.0000,1000.0000,'MH 01 AB 1234',2000.0000,300.0000,2300.0000,1800.0000);
 /*!40000 ALTER TABLE `bill` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -57,18 +59,21 @@ DROP TABLE IF EXISTS `bill_product_detail`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
 CREATE TABLE `bill_product_detail` (
-  `BillProductId` int(11) NOT NULL AUTO_INCREMENT,
-  `BillId` int(11) NOT NULL,
-  `ProductId` int(11) NOT NULL,
-  `TotalCostPrice` decimal(15,2) NOT NULL,
-  `TotalSellingPrice` decimal(15,2) NOT NULL,
-  `Quantity` int(11) NOT NULL,
-  PRIMARY KEY (`BillProductId`),
-  KEY `BillProduct_Bill_FK_idx` (`BillId`),
-  KEY `BillProduct_Product_FK_idx` (`ProductId`),
-  CONSTRAINT `BillProduct_Bill_FK` FOREIGN KEY (`BillId`) REFERENCES `bill` (`billId`),
-  CONSTRAINT `BillProduct_Product_FK` FOREIGN KEY (`ProductId`) REFERENCES `product` (`productId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `billProductId` int(11) NOT NULL AUTO_INCREMENT,
+  `billId` int(11) NOT NULL,
+  `productId` int(11) NOT NULL,
+  `totalCostPrice` decimal(15,2) NOT NULL,
+  `totalSellingPrice` decimal(15,2) NOT NULL,
+  `quantity` int(11) NOT NULL,
+  `cgst` decimal(10,4) DEFAULT NULL,
+  `sgst` decimal(10,4) DEFAULT NULL,
+  `igst` decimal(10,4) DEFAULT NULL,
+  PRIMARY KEY (`billProductId`),
+  KEY `BillProduct_Bill_FK_idx` (`billId`),
+  KEY `BillProduct_Product_FK_idx` (`productId`),
+  CONSTRAINT `BillProduct_Bill_FK` FOREIGN KEY (`billId`) REFERENCES `bill` (`billId`),
+  CONSTRAINT `BillProduct_Product_FK` FOREIGN KEY (`productId`) REFERENCES `product` (`productId`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -77,6 +82,7 @@ CREATE TABLE `bill_product_detail` (
 
 LOCK TABLES `bill_product_detail` WRITE;
 /*!40000 ALTER TABLE `bill_product_detail` DISABLE KEYS */;
+INSERT INTO `bill_product_detail` VALUES (1,9,16,1000.00,2000.00,1,100.0000,100.0000,100.0000),(2,10,16,5000.00,2000.00,1,100.0000,100.0000,100.0000),(3,11,16,5000.00,2000.00,1,100.0000,100.0000,100.0000),(4,12,16,5000.00,2000.00,1,100.0000,100.0000,100.0000),(5,13,16,2000.00,2000.00,1,100.0000,100.0000,100.0000),(6,14,17,1000.00,2000.00,1,100.0000,100.0000,100.0000);
 /*!40000 ALTER TABLE `bill_product_detail` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -179,7 +185,7 @@ CREATE TABLE `dealer` (
   PRIMARY KEY (`dealerId`),
   UNIQUE KEY `DealerEmail_UNIQUE` (`dealerEmail`),
   UNIQUE KEY `DealerUserName_UNIQUE` (`dealerUserName`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -188,7 +194,7 @@ CREATE TABLE `dealer` (
 
 LOCK TABLES `dealer` WRITE;
 /*!40000 ALTER TABLE `dealer` DISABLE KEYS */;
-INSERT INTO `dealer` VALUES (1,'Sahil','Sector 6 kaypee heritage Koparkhirane','8755079382','Mumbai','arora.sahil83@gmail.com','','sahila33','arora mithai vale','8793199461',431602,1,'2019-02-21 11:14:10.60',1,'2019-02-23 09:10:48.73',NULL,1),(2,'Sahil','KoparKiarane','123','Mumbai','arora.sahil9@gmail.com','','sahila1','Sahil Associates','12345',151101,1,'2019-02-21 14:26:32.32',NULL,NULL,NULL,1),(3,'Yash','koparkhairne','112e33','Mumbai','mamidwaryash@gmail.com','','yashm','Yash Agency','11323',151001,1,'2019-02-22 18:19:47.50',NULL,NULL,NULL,1),(5,'Anmol','Kopkhairne','879319921','Mumbai','anmol.rastogi@gmail.com','','Anmolr1','anmol agency','87893199461',411098,1,'2019-02-23 07:32:22.03',NULL,NULL,NULL,1);
+INSERT INTO `dealer` VALUES (1,'Sahil','Sector 6 kaypee heritage Koparkhirane','8755079382','Mumbai','arora.sahil83@gmail.com','','sahila33','arora mithai vale','8793199461',431602,1,'2019-02-21 11:14:10.60',1,'2019-02-23 09:10:48.73',NULL,1),(2,'Sahil','KoparKiarane','123','Mumbai','arora.sahil9@gmail.com','','sahila1','Sahil Associates','12345',151101,1,'2019-02-21 14:26:32.32',NULL,NULL,NULL,1),(3,'Yash','koparkhairne','112e33','Mumbai','mamidwaryash@gmail.com','','yashm','Yash Agency','11323',151001,1,'2019-02-22 18:19:47.50',NULL,NULL,NULL,1),(5,'Anmol','Kopkhairne','879319921','Mumbai','anmol.rastogi@gmail.com','','Anmolr1','anmol agency','87893199461',411098,1,'2019-02-23 07:32:22.03',NULL,NULL,NULL,1),(6,'Vyas','112','','Mumbai','arora.sahil8@gmail.com','Dealer','Vyas','Indore Namkeen Store','',151001,1,'2019-03-29 10:06:10.07',NULL,NULL,NULL,1);
 /*!40000 ALTER TABLE `dealer` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -202,12 +208,11 @@ DROP TABLE IF EXISTS `outstanding`;
 CREATE TABLE `outstanding` (
   `outstandingId` int(11) NOT NULL AUTO_INCREMENT,
   `dealerId` int(11) NOT NULL,
-  `debit` decimal(10,4) NOT NULL DEFAULT '0.0000',
-  `credit` decimal(10,4) NOT NULL DEFAULT '0.0000',
+  `outstandingAmount` decimal(10,4) DEFAULT '0.0000',
   PRIMARY KEY (`outstandingId`),
   KEY `Outstanding_DealerId_idx` (`dealerId`),
   CONSTRAINT `Outstanding_DealerId` FOREIGN KEY (`dealerId`) REFERENCES `dealer` (`dealerId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -216,6 +221,7 @@ CREATE TABLE `outstanding` (
 
 LOCK TABLES `outstanding` WRITE;
 /*!40000 ALTER TABLE `outstanding` DISABLE KEYS */;
+INSERT INTO `outstanding` VALUES (1,6,-1000.0000);
 /*!40000 ALTER TABLE `outstanding` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -249,7 +255,7 @@ CREATE TABLE `product` (
   CONSTRAINT `ProductCreated_User_FK` FOREIGN KEY (`createdBy`) REFERENCES `user` (`userId`),
   CONSTRAINT `ProductUpdated_user_FK` FOREIGN KEY (`updatedBy`) REFERENCES `user` (`userId`),
   CONSTRAINT `Product_Category_FK` FOREIGN KEY (`categoryId`) REFERENCES `category` (`categoryId`)
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -258,7 +264,7 @@ CREATE TABLE `product` (
 
 LOCK TABLES `product` WRITE;
 /*!40000 ALTER TABLE `product` DISABLE KEYS */;
-INSERT INTO `product` VALUES (1,1,'Mi Note 5','','',NULL,NULL,NULL,0,1,NULL,NULL,NULL,NULL),(6,1,'Demo2','','',NULL,NULL,NULL,1,1,'2019-02-17 08:30:24',1,'2019-02-17 09:40:29.94',NULL),(7,1,'Iphone x','','',NULL,NULL,NULL,0,1,'2019-02-17 08:30:33',1,'2019-02-17 09:46:18.36','Not Required'),(8,18,'Ambuja Cement','','',NULL,NULL,NULL,1,1,'2019-02-18 16:54:32',NULL,NULL,NULL),(9,18,'Ultra Tech Cement','','',NULL,NULL,NULL,1,1,'2019-02-18 16:54:48',NULL,NULL,NULL),(10,20,'Monitor','','',NULL,NULL,NULL,1,1,'2019-02-19 07:56:05',NULL,NULL,NULL),(15,1,'Note 7','4GB','unit',2.5000,2.5000,0.0000,1,1,'2019-03-16 16:49:06',NULL,NULL,NULL);
+INSERT INTO `product` VALUES (1,1,'Mi Note 5','','',NULL,NULL,NULL,0,1,NULL,NULL,NULL,NULL),(6,1,'Demo2','','',NULL,NULL,NULL,1,1,'2019-02-17 08:30:24',1,'2019-02-17 09:40:29.94',NULL),(7,1,'Iphone x','','',NULL,NULL,NULL,0,1,'2019-02-17 08:30:33',1,'2019-02-17 09:46:18.36','Not Required'),(8,18,'Ambuja Cement','','',NULL,NULL,NULL,1,1,'2019-02-18 16:54:32',NULL,NULL,NULL),(9,18,'Ultra Tech Cement','','',NULL,NULL,NULL,1,1,'2019-02-18 16:54:48',NULL,NULL,NULL),(10,20,'Monitor','','',NULL,NULL,NULL,1,1,'2019-02-19 07:56:05',NULL,NULL,NULL),(15,1,'Note 7','4GB','unit',2.5000,2.5000,0.0000,1,1,'2019-03-16 16:49:06',NULL,NULL,NULL),(16,1,'Iphone 8','64 gb','L',5.0000,5.0000,5.0000,1,1,'2019-03-29 14:48:07',NULL,NULL,NULL),(17,1,'Samsung S8','64 GB','Kg',5.0000,5.0000,5.0000,1,1,'2019-04-04 14:59:47',NULL,NULL,NULL);
 /*!40000 ALTER TABLE `product` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -283,7 +289,7 @@ CREATE TABLE `purchase_history` (
   PRIMARY KEY (`purchaseId`),
   KEY `Purchase_Dealer_FK_idx` (`dealerId`),
   CONSTRAINT `Purchase_Dealer_FK` FOREIGN KEY (`dealerId`) REFERENCES `dealer` (`dealerId`)
-) ENGINE=InnoDB AUTO_INCREMENT=54 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=62 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -292,7 +298,7 @@ CREATE TABLE `purchase_history` (
 
 LOCK TABLES `purchase_history` WRITE;
 /*!40000 ALTER TABLE `purchase_history` DISABLE KEYS */;
-INSERT INTO `purchase_history` VALUES (1,2,NULL,'MH 01 AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(4,2,NULL,'MH 01 AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(5,2,NULL,'MH 01 AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(6,2,NULL,'MH 01 AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(7,2,NULL,'MH 01 AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(8,2,NULL,'MH 01 AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(9,2,NULL,'MH 01 AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(10,2,NULL,'MH 01 AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(11,2,NULL,'MH 01 AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(12,2,NULL,'MH 01 AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(13,2,NULL,'MH 01 AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(14,2,NULL,'MH 01 AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(15,2,NULL,'MH 01 AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(16,2,NULL,'MH 01 AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(17,2,NULL,'MH 01 AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(18,2,NULL,'MH 01 AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(19,2,NULL,'MH 01 AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(20,2,NULL,'MH 01 AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(21,2,NULL,'MH 01 AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(22,1,NULL,'MH 01AB 1234',1000.0000,1000.0000,1000.0000,2000.0000,100.0000,1900.0000),(23,1,NULL,'MH 01AB 1234',1000.0000,1000.0000,1000.0000,2000.0000,100.0000,1900.0000),(24,1,NULL,'MH 01AB 1234',1000.0000,1000.0000,1000.0000,2000.0000,100.0000,1900.0000),(25,1,NULL,'MH 01AB 1234',1000.0000,1000.0000,1000.0000,2000.0000,100.0000,1900.0000),(26,1,NULL,'MH 01 AB 1234',1000.0000,3000.0000,1000.0000,4000.0000,100.0000,3900.0000),(27,1,NULL,'MH 01 AB 1234',1000.0000,3000.0000,1000.0000,4000.0000,100.0000,3900.0000),(28,1,NULL,'MH 01 AB 1234',1000.0000,3000.0000,1000.0000,4000.0000,100.0000,3900.0000),(29,1,NULL,'MH 01 AB 1234',1000.0000,3000.0000,1000.0000,4000.0000,100.0000,3900.0000),(30,1,NULL,'MH 01 AB 1234',1000.0000,3000.0000,1000.0000,4000.0000,100.0000,3900.0000),(31,1,NULL,'MH 01 AB 1234',1000.0000,3000.0000,1000.0000,4000.0000,100.0000,3900.0000),(32,1,NULL,'MH 01 AB 1234',1000.0000,3000.0000,1000.0000,4000.0000,100.0000,3900.0000),(33,1,NULL,'MH 01AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(34,1,NULL,'MH 01AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(35,1,NULL,'MH 01AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(36,1,NULL,'MH 01AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(37,1,NULL,'MH 01AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(38,1,NULL,'MH 01AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(39,1,NULL,'MH 01AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(40,1,NULL,'MH 01AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(41,1,NULL,'MH 01AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(42,1,NULL,'MH 01AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(43,1,NULL,'MH 01AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(44,1,NULL,'MH 01AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(45,1,NULL,'MH 01AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(46,1,NULL,'MH 01AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(47,1,NULL,'MH 01AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(48,1,NULL,'MH 01AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(49,1,NULL,'MH 01AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(50,1,NULL,'MH 01AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(51,1,NULL,'MH 01AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(52,1,NULL,'MH 01AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(53,1,NULL,'MH 01AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000);
+INSERT INTO `purchase_history` VALUES (1,2,NULL,'MH 01 AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(4,2,NULL,'MH 01 AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(5,2,NULL,'MH 01 AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(6,2,NULL,'MH 01 AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(7,2,NULL,'MH 01 AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(8,2,NULL,'MH 01 AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(9,2,NULL,'MH 01 AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(10,2,NULL,'MH 01 AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(11,2,NULL,'MH 01 AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(12,2,NULL,'MH 01 AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(13,2,NULL,'MH 01 AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(14,2,NULL,'MH 01 AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(15,2,NULL,'MH 01 AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(16,2,NULL,'MH 01 AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(17,2,NULL,'MH 01 AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(18,2,NULL,'MH 01 AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(19,2,NULL,'MH 01 AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(20,2,NULL,'MH 01 AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(21,2,NULL,'MH 01 AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(22,1,NULL,'MH 01AB 1234',1000.0000,1000.0000,1000.0000,2000.0000,100.0000,1900.0000),(23,1,NULL,'MH 01AB 1234',1000.0000,1000.0000,1000.0000,2000.0000,100.0000,1900.0000),(24,1,NULL,'MH 01AB 1234',1000.0000,1000.0000,1000.0000,2000.0000,100.0000,1900.0000),(25,1,NULL,'MH 01AB 1234',1000.0000,1000.0000,1000.0000,2000.0000,100.0000,1900.0000),(26,1,NULL,'MH 01 AB 1234',1000.0000,3000.0000,1000.0000,4000.0000,100.0000,3900.0000),(27,1,NULL,'MH 01 AB 1234',1000.0000,3000.0000,1000.0000,4000.0000,100.0000,3900.0000),(28,1,NULL,'MH 01 AB 1234',1000.0000,3000.0000,1000.0000,4000.0000,100.0000,3900.0000),(29,1,NULL,'MH 01 AB 1234',1000.0000,3000.0000,1000.0000,4000.0000,100.0000,3900.0000),(30,1,NULL,'MH 01 AB 1234',1000.0000,3000.0000,1000.0000,4000.0000,100.0000,3900.0000),(31,1,NULL,'MH 01 AB 1234',1000.0000,3000.0000,1000.0000,4000.0000,100.0000,3900.0000),(32,1,NULL,'MH 01 AB 1234',1000.0000,3000.0000,1000.0000,4000.0000,100.0000,3900.0000),(33,1,NULL,'MH 01AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(34,1,NULL,'MH 01AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(35,1,NULL,'MH 01AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(36,1,NULL,'MH 01AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(37,1,NULL,'MH 01AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(38,1,NULL,'MH 01AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(39,1,NULL,'MH 01AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(40,1,NULL,'MH 01AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(41,1,NULL,'MH 01AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(42,1,NULL,'MH 01AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(43,1,NULL,'MH 01AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(44,1,NULL,'MH 01AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(45,1,NULL,'MH 01AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(46,1,NULL,'MH 01AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(47,1,NULL,'MH 01AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(48,1,NULL,'MH 01AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(49,1,NULL,'MH 01AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(50,1,NULL,'MH 01AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(51,1,NULL,'MH 01AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(52,1,NULL,'MH 01AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(53,1,NULL,'MH 01AB 1234',1000.0000,2000.0000,1000.0000,3000.0000,100.0000,2900.0000),(54,6,NULL,'MH 01 AB 1234',2000.0000,3000.0000,1000.0000,4000.0000,100.0000,3900.0000),(55,6,NULL,'MH 01 AB 1234',2000.0000,3000.0000,1000.0000,4000.0000,100.0000,3900.0000),(56,6,NULL,'MH 01 AB 1234',1000.0000,1000.0000,1000.0000,2000.0000,100.0000,1900.0000),(57,6,NULL,'MH 01 AB 1234',120.0000,1000.0000,100.0000,1100.0000,500.0000,600.0000),(58,6,NULL,'MH 01 AB 1234',1000.0000,1000.0000,100.0000,1100.0000,500.0000,600.0000),(59,6,NULL,'MH 01 AB 12345',2000.0000,6000.0000,1000.0000,7000.0000,1000.0000,6000.0000),(60,6,NULL,'MH 01 AB 1232',1000.0000,12000.0000,1200.0000,13200.0000,500.0000,12700.0000),(61,6,NULL,'MH 01 AB 1234',1000.0000,3000.0000,300.0000,3300.0000,500.0000,2800.0000);
 /*!40000 ALTER TABLE `purchase_history` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -317,7 +323,7 @@ CREATE TABLE `purchase_product` (
   KEY `Product_Purchase_FK_idx` (`productId`),
   KEY `PurchaseProduct_Product_FK_idx` (`purchaseId`),
   CONSTRAINT `Purchase_Product_FK` FOREIGN KEY (`productId`) REFERENCES `product` (`productId`)
-) ENGINE=InnoDB AUTO_INCREMENT=69 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=93 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -326,7 +332,7 @@ CREATE TABLE `purchase_product` (
 
 LOCK TABLES `purchase_product` WRITE;
 /*!40000 ALTER TABLE `purchase_product` DISABLE KEYS */;
-INSERT INTO `purchase_product` VALUES (49,44,6,1,1000.0000,1,100.0000,100.0000,100.0000),(50,44,9,1,1000.0000,1,100.0000,100.0000,100.0000),(51,45,6,1,1000.0000,1,100.0000,100.0000,100.0000),(52,45,9,1,1000.0000,1,100.0000,100.0000,100.0000),(53,46,6,1,1000.0000,1,100.0000,100.0000,100.0000),(54,46,9,1,1000.0000,1,100.0000,100.0000,100.0000),(55,47,6,1,1000.0000,1,100.0000,100.0000,100.0000),(56,47,9,1,1000.0000,1,100.0000,100.0000,100.0000),(57,48,6,1,1000.0000,1,100.0000,100.0000,100.0000),(58,48,9,1,1000.0000,1,100.0000,100.0000,100.0000),(59,49,6,1,1000.0000,1,100.0000,100.0000,100.0000),(60,49,9,1,1000.0000,1,100.0000,100.0000,100.0000),(61,50,6,1,1000.0000,1,100.0000,100.0000,100.0000),(62,50,9,1,1000.0000,1,100.0000,100.0000,100.0000),(63,51,6,1,1000.0000,1,100.0000,100.0000,100.0000),(64,51,9,1,1000.0000,1,100.0000,100.0000,100.0000),(65,52,6,1,1000.0000,1,100.0000,100.0000,100.0000),(66,52,9,1,1000.0000,1,100.0000,100.0000,100.0000),(67,53,6,1,1000.0000,1,100.0000,100.0000,100.0000),(68,53,9,1,1000.0000,1,100.0000,100.0000,100.0000);
+INSERT INTO `purchase_product` VALUES (49,44,6,1,1000.0000,1,100.0000,100.0000,100.0000),(50,44,9,1,1000.0000,1,100.0000,100.0000,100.0000),(51,45,6,1,1000.0000,1,100.0000,100.0000,100.0000),(52,45,9,1,1000.0000,1,100.0000,100.0000,100.0000),(53,46,6,1,1000.0000,1,100.0000,100.0000,100.0000),(54,46,9,1,1000.0000,1,100.0000,100.0000,100.0000),(55,47,6,1,1000.0000,1,100.0000,100.0000,100.0000),(56,47,9,1,1000.0000,1,100.0000,100.0000,100.0000),(57,48,6,1,1000.0000,1,100.0000,100.0000,100.0000),(58,48,9,1,1000.0000,1,100.0000,100.0000,100.0000),(59,49,6,1,1000.0000,1,100.0000,100.0000,100.0000),(60,49,9,1,1000.0000,1,100.0000,100.0000,100.0000),(61,50,6,1,1000.0000,1,100.0000,100.0000,100.0000),(62,50,9,1,1000.0000,1,100.0000,100.0000,100.0000),(63,51,6,1,1000.0000,1,100.0000,100.0000,100.0000),(64,51,9,1,1000.0000,1,100.0000,100.0000,100.0000),(65,52,6,1,1000.0000,1,100.0000,100.0000,100.0000),(66,52,9,1,1000.0000,1,100.0000,100.0000,100.0000),(67,53,6,1,1000.0000,1,100.0000,100.0000,100.0000),(68,53,9,1,1000.0000,1,100.0000,100.0000,100.0000),(69,54,6,1,1000.0000,1,100.0000,100.0000,100.0000),(70,54,15,1,2000.0000,1,100.0000,100.0000,100.0000),(71,55,6,1,1000.0000,1,100.0000,100.0000,100.0000),(72,55,15,1,2000.0000,1,100.0000,100.0000,100.0000),(73,56,16,1,1000.0000,0,100.0000,100.0000,100.0000),(74,57,16,1,1000.0000,0,100.0000,100.0000,100.0000),(75,58,16,1,1000.0000,0,100.0000,100.0000,100.0000),(90,59,16,3,2000.0000,1,100.0000,100.0000,100.0000),(91,60,16,12,1000.0000,12,100.0000,100.0000,100.0000),(92,61,17,3,1000.0000,2,100.0000,100.0000,100.0000);
 /*!40000 ALTER TABLE `purchase_product` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -345,7 +351,7 @@ CREATE TABLE `stock` (
   PRIMARY KEY (`stockId`),
   KEY `Stock_Product_FK_idx` (`productId`),
   CONSTRAINT `Stock_Product_FK` FOREIGN KEY (`productId`) REFERENCES `product` (`productId`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -354,7 +360,7 @@ CREATE TABLE `stock` (
 
 LOCK TABLES `stock` WRITE;
 /*!40000 ALTER TABLE `stock` DISABLE KEYS */;
-INSERT INTO `stock` VALUES (1,6,5,0),(2,9,5,0);
+INSERT INTO `stock` VALUES (1,6,15,0),(2,9,13,0),(3,15,10,0),(4,16,12,0),(5,17,2,0);
 /*!40000 ALTER TABLE `stock` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -375,7 +381,7 @@ CREATE TABLE `transaction` (
   `transactionType` varchar(255) NOT NULL,
   `timeStamp` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`transactionId`)
-) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=69 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -384,7 +390,7 @@ CREATE TABLE `transaction` (
 
 LOCK TABLES `transaction` WRITE;
 /*!40000 ALTER TABLE `transaction` DISABLE KEYS */;
-INSERT INTO `transaction` VALUES (1,14,NULL,2,100.0000,'Cash','Purchase',NULL),(2,15,NULL,2,100.0000,'Cash','Purchase',NULL),(3,12,NULL,2,100.0000,'Cash','Purchase',NULL),(4,12,NULL,2,100.0000,'Cash','Purchase',NULL),(5,12,NULL,2,100.0000,'Cash','Purchase',NULL),(6,12,NULL,2,100.0000,'Cash','Purchase',NULL),(7,12,NULL,2,100.0000,'Cash','Purchase',NULL),(8,12,NULL,2,100.0000,'Cash','Purchase',NULL),(9,12,NULL,1,100.0000,'Cash','Purchase',NULL),(10,12,NULL,1,100.0000,'Cash','Purchase',NULL),(11,12,NULL,1,100.0000,'Cash','Purchase',NULL),(12,12,NULL,1,100.0000,'Cash','Purchase',NULL),(13,12,NULL,1,100.0000,'Cash','Purchase',NULL),(14,12,NULL,1,100.0000,'Cash','Purchase',NULL),(15,12,NULL,1,100.0000,'Cash','Purchase',NULL),(16,12,NULL,1,100.0000,'Cash','Purchase',NULL),(17,12,NULL,1,100.0000,'Cash','Purchase',NULL),(18,12,NULL,1,100.0000,'Cash','Purchase',NULL),(19,12,NULL,1,100.0000,'Cash','Purchase',NULL),(20,38,NULL,1,100.0000,'Cash','Purchase',NULL),(21,39,NULL,1,100.0000,'Cash','Purchase',NULL),(22,40,NULL,1,100.0000,'Cash','Purchase',NULL),(23,41,NULL,1,100.0000,'Cash','Purchase',NULL),(24,42,NULL,1,100.0000,'Cash','Purchase',NULL),(25,43,NULL,1,100.0000,'Cash','Purchase',NULL),(26,44,NULL,1,100.0000,'Cash','Purchase',NULL),(27,45,NULL,1,100.0000,'Cash','Purchase',NULL),(28,46,NULL,1,100.0000,'Cash','Purchase',NULL),(29,47,NULL,1,100.0000,'Cash','Purchase',NULL),(30,48,NULL,1,100.0000,'Cash','Purchase',NULL),(31,49,NULL,1,100.0000,'Cash','Purchase',NULL),(32,50,NULL,1,100.0000,'Cash','Purchase',NULL),(33,51,NULL,1,100.0000,'Cash','Purchase',NULL),(34,52,NULL,1,100.0000,'Cash','Purchase',NULL),(35,53,NULL,1,100.0000,'Cash','Purchase',NULL);
+INSERT INTO `transaction` VALUES (1,14,NULL,2,100.0000,'Cash','Purchase',NULL),(2,15,NULL,2,100.0000,'Cash','Purchase',NULL),(3,12,NULL,2,100.0000,'Cash','Purchase',NULL),(4,12,NULL,2,100.0000,'Cash','Purchase',NULL),(5,12,NULL,2,100.0000,'Cash','Purchase',NULL),(6,12,NULL,2,100.0000,'Cash','Purchase',NULL),(7,12,NULL,2,100.0000,'Cash','Purchase',NULL),(8,12,NULL,2,100.0000,'Cash','Purchase',NULL),(9,12,NULL,1,100.0000,'Cash','Purchase',NULL),(10,12,NULL,1,100.0000,'Cash','Purchase',NULL),(11,12,NULL,1,100.0000,'Cash','Purchase',NULL),(12,12,NULL,1,100.0000,'Cash','Purchase',NULL),(13,12,NULL,1,100.0000,'Cash','Purchase',NULL),(14,12,NULL,1,100.0000,'Cash','Purchase',NULL),(15,12,NULL,1,100.0000,'Cash','Purchase',NULL),(16,12,NULL,1,100.0000,'Cash','Purchase',NULL),(17,12,NULL,1,100.0000,'Cash','Purchase',NULL),(18,12,NULL,1,100.0000,'Cash','Purchase',NULL),(19,12,NULL,1,100.0000,'Cash','Purchase',NULL),(20,38,NULL,1,100.0000,'Cash','Purchase',NULL),(21,39,NULL,1,100.0000,'Cash','Purchase',NULL),(22,40,NULL,1,100.0000,'Cash','Purchase',NULL),(23,41,NULL,1,100.0000,'Cash','Purchase',NULL),(24,42,NULL,1,100.0000,'Cash','Purchase',NULL),(25,43,NULL,1,100.0000,'Cash','Purchase',NULL),(26,44,NULL,1,100.0000,'Cash','Purchase',NULL),(27,45,NULL,1,100.0000,'Cash','Purchase',NULL),(28,46,NULL,1,100.0000,'Cash','Purchase',NULL),(29,47,NULL,1,100.0000,'Cash','Purchase',NULL),(30,48,NULL,1,100.0000,'Cash','Purchase',NULL),(31,49,NULL,1,100.0000,'Cash','Purchase',NULL),(32,50,NULL,1,100.0000,'Cash','Purchase',NULL),(33,51,NULL,1,100.0000,'Cash','Purchase',NULL),(34,52,NULL,1,100.0000,'Cash','Purchase',NULL),(35,53,NULL,1,100.0000,'Cash','Purchase',NULL),(36,54,NULL,6,100.0000,'Cash','Purchase',NULL),(37,55,NULL,6,100.0000,'Cash','Purchase',NULL),(38,56,NULL,6,100.0000,'Cash','Purchase',NULL),(39,57,NULL,6,500.0000,'Cash','Purchase',NULL),(40,58,NULL,6,500.0000,'Cash','Purchase',NULL),(41,59,NULL,6,500.0000,'Cash','Purchase',NULL),(42,59,NULL,6,100.0000,'Cash','Purchase',NULL),(43,59,NULL,6,100.0000,'Cash','Purchase',NULL),(44,59,NULL,6,100.0000,'Cash','Purchase',NULL),(45,59,NULL,6,100.0000,'Cash','Purchase',NULL),(46,59,NULL,6,100.0000,'Cash','Purchase',NULL),(47,59,NULL,6,100.0000,'Cash','Purchase',NULL),(48,59,NULL,6,100.0000,'Cash','Purchase',NULL),(49,59,NULL,6,100.0000,'Cash','Purchase',NULL),(50,59,NULL,6,100.0000,'Cash','Purchase',NULL),(51,59,NULL,6,1000.0000,'Cash','Purchase',NULL),(52,59,NULL,6,1000.0000,'Cash','Purchase',NULL),(53,59,NULL,6,1000.0000,'Cash','Purchase',NULL),(54,59,NULL,6,1000.0000,'Cash','Purchase',NULL),(55,59,NULL,6,1000.0000,'Cash','Purchase',NULL),(56,NULL,4,6,500.0000,'undefined','Sell',NULL),(57,NULL,5,6,500.0000,'undefined','Sell',NULL),(58,NULL,6,6,500.0000,'undefined','Sell',NULL),(59,NULL,7,6,500.0000,'undefined','Sell',NULL),(60,NULL,8,6,500.0000,'undefined','Sell',NULL),(61,NULL,9,6,500.0000,'undefined','Sell',NULL),(62,NULL,10,6,500.0000,'undefined','Sell',NULL),(63,NULL,11,6,500.0000,'undefined','Sell',NULL),(64,NULL,12,6,500.0000,'undefined','Sell',NULL),(65,NULL,13,6,500.0000,'undefined','Sell',NULL),(66,60,NULL,6,500.0000,'Cash','Purchase',NULL),(67,61,NULL,6,500.0000,'Cash','Purchase',NULL),(68,NULL,14,6,500.0000,'undefined','Sell',NULL);
 /*!40000 ALTER TABLE `transaction` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -416,10 +422,6 @@ INSERT INTO `user` VALUES (1,'admin','Yash','Mamidwar');
 UNLOCK TABLES;
 
 --
--- Dumping events for database 'testing'
---
-
---
 -- Dumping routines for database 'testing'
 --
 /*!50003 DROP PROCEDURE IF EXISTS `AddBill` */;
@@ -432,10 +434,84 @@ UNLOCK TABLES;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `AddBill`(In _customerId int(11),In _amountPaid int(11),In _products json )
+CREATE DEFINER=`root`@`localhost` PROCEDURE `AddBill`(
+In _dealerID int(11),
+In _vehicleNumber varchar(255),
+In _labourCharges decimal(10,4),
+In _amount decimal(10,4),
+In _netGst decimal(10,4),
+In _totalAmount decimal(10,4),
+In _amountPaid decimal(10,4) )
 BEGIN
-/*(select JSON_EXTRACT(_products,"$length");*/
-select JSON_LENGTH(_products);
+declare	_billId int(11);
+/*DECLARE EXIT HANDLER FOR SQLEXCEPTION SELECT 'error' as status,'Stock Addition Failed' as message;*/
+insert into bill(
+dealerID,
+vehicleNumber,
+labourCharges,
+amount,
+netGst,
+totalAmount,
+amountPaid,
+balance
+) 
+values(
+_dealerID,
+_vehicleNumber,
+_labourCharges,
+_amount,
+_netGst,
+_totalAmount,
+_amountPaid,
+_totalAmount - _amountPaid
+);
+set _billId = last_insert_id();
+SELECT 'success' AS status, 'Stock Added Succesfully' AS message,_billId as billId;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `AddBillProduct` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `AddBillProduct`(
+In _billId int(11),In _productId int(11),
+In _quantity int(11),
+In _totalCostPrice decimal(10,4),
+In _totalSellingPrice decimal(10,4),
+In _cgst decimal(10,4),
+In _sgst decimal(10,4),
+In _igst decimal(10,4)
+)
+BEGIN
+insert into bill_product_detail(
+billId,
+productId,
+quantity,
+totalCostPrice,
+totalSellingPrice,
+cgst,
+sgst,
+igst
+) values(
+_billId,
+_productId,
+_quantity,
+_totalCostPrice,
+_totalSellingPrice,
+_cgst,
+_sgst,
+_igst
+);
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -573,7 +649,7 @@ _dealerPhoneNumber,
 _createdBy
 );
 set _dealerId= LAST_INSERT_ID();
-insert into outstanding(dealerId,debit,credit) values(_dealerID,0,0);
+insert into outstanding(dealerId) values(_dealerID);
 SELECT 'success' AS status, 'Dealer Added Succesfully' AS message;
 END if;
 END ;;
@@ -625,6 +701,7 @@ VALUES
  _cgstPercentage,
  _sgstPercentage,
  _igstPercentage,_createdBy);
+ insert into stock(productId) values(last_insert_id());
 SELECT 'success' AS status, 'Product Added Succesfully' AS message;
 END if;
 End ;;
@@ -720,6 +797,7 @@ _cgst,
 _sgst,
 _igst
 );
+/*
 if exists(select * from stock where productId=_productId) then
 if(_cgst=null && _sgst=null && _igst=null) then 
 update stock set  quantityBlack = quantityBlack + _quantityPurchased where productId=_productId;
@@ -733,6 +811,7 @@ else
 insert into stock(productId,quantity) values(_productId, _quantityPurchased);
 end if;
 END if;
+*/
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -908,6 +987,25 @@ SELECT
 else 
 SELECT 'error' as status,'Stock Id Does not Exist' as message;
 end if;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `DeletePurchaseProducts` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `DeletePurchaseProducts`(_purchaseId int(11))
+BEGIN
+delete from purchase_product where purchaseId=_purchaseId;
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -1125,8 +1223,50 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `EditPurchase`(
-In _PurchaseId int(11),In _productId int(11),In _costPrice decimal(15,2),
+CREATE DEFINER=`root`@`localhost` PROCEDURE `EditPurchase`(In _purchaseId int(11),
+In _dealerID int(11),
+In _vehicleNumber varchar(255),
+In _labourCharges decimal(10,4),
+In _amount decimal(10,4),
+In _netGst decimal(10,4),
+In _totalAmount decimal(10,4),
+In _amountPaid decimal(10,4))
+BEGIN
+declare _outstanding decimal(10,4);
+declare _prevDealerId int(11);
+DECLARE EXIT HANDLER FOR SQLEXCEPTION SELECT 'error' as status,'Purchase Updation Failed' as message;
+select dealerId into _prevDealerId from purchase_history where purchaseId=_purchaseId;
+select balance into _outstanding from purchase_history where purchaseId=_purchaseId;
+call ManageOutstandings(_prevDealerId,_outstanding,'Recieve');
+update purchase_history set
+dealerID = _dealerID,
+vehicleNumber=_vehicleNumber,
+labourCharges=_labourCharges,
+amount=_amount,
+netGst=_netGst,
+totalAmount=_totalAmount,
+amountPaid=_amountPaid,
+balance=_totalAmount - _amountPaid
+where purchaseId=_purchaseId;
+SELECT 'success' AS status, 'Purchase Updated Succesfully' AS message;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `EditStock` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `EditStock`(
+In _stockId int(11),In _productId int(11),In _costPrice decimal(15,2),
 In _quantityPurchased int(11),
 In _purchaseTimeStamp timestamp,
 In _dealerId int(11),
@@ -1134,24 +1274,24 @@ In _updatedBy int(11)
 )
 BEGIN
 /*DECLARE EXIT HANDLER FOR SQLEXCEPTION SELECT 'error' as status,'Stock Updation Failed' as message;*/
-UPDATE purchase_history 
+UPDATE stock 
 SET 
     productId = _productId,
     costPrice = _costPrice,
     purchaseTimeStamp = _purchaseTimeStamp,
-    quantityPurchased = _quantityPurchased,
+    quantityAvailable = _quantityPurchased,
     updatedBy = _updatedBy,
     updatedOn = CURRENT_TIMESTAMP(2),
     dealerId = _dealerID
 WHERE
-    PurchaseId = _PurchaseId;
-UPDATE stock
+    stockId = _stockId;
+UPDATE purchase_history 
 SET 
-    quantityAvailable = quantityAvailable + _quantityPurchased,
+    quantity = _quantityPurchased,
     updatedBy = _updatedBy,
     updatedOn = CURRENT_TIMESTAMP(2)
 WHERE
-   productId = productId;
+    stockId = _stockId;
 SELECT 'success' AS status, 'Stock Updated Successfully' AS message;
 END ;;
 DELIMITER ;
@@ -1343,6 +1483,28 @@ DELIMITER ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `GetProductsPurchase` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `GetProductsPurchase`(_purchaseId int(11))
+BEGIN
+select pp.*,p.productName,p.cgstPercentage,p.sgstPercentage,p.igstPercentage 
+from purchase_product pp  join product p 
+on pp.productId = p.productId
+where purchaseId=_purchaseId;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!50003 DROP PROCEDURE IF EXISTS `GetPurchase` */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
@@ -1356,10 +1518,34 @@ DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `GetPurchase`()
 BEGIN
 DECLARE EXIT HANDLER FOR SQLEXCEPTION SELECT 'error' as status,'Unable To Find Purchases' as message;
-select ph.*,p.productName,c.categoryName,d.dealerContactPerson
- from purchase_history ph join product p on ph.productId=p.productId 
-join category c on p.categoryId = c.categoryId join dealer d on 
-ph.dealerId = d.dealerId where isActive=1;
+select * from purchase_history;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `GetPurchaseAvailability` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `GetPurchaseAvailability`(In _productId int(11),In _type varchar(255))
+BEGIN
+if(_type='Normal') then
+select * from purchase_product p where productId=_productId and availability>0 and 
+(cgst is not null || sgst is not null || igst is not null)
+order by  purchaseId;
+else
+select * from purchase_product p where productId=_productId and availability>0 and 
+(cgst is  null && sgst is not null && igst is not null)
+order by  purchaseId;
+end if;
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -1400,9 +1586,7 @@ DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `GetStock`()
 BEGIN
 DECLARE EXIT HANDLER FOR SQLEXCEPTION SELECT 'error' as status,'Unable To Find Stocks' as message;
-select s.*,p.productName,c.categoryName,d.dealerName from stock s join product p on s.productId=p.productId 
-join category c on p.categoryId = c.categoryId join dealer d on 
-s.dealerId = d.dealerId where s.isActive=1;
+select * from stock;
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -1441,15 +1625,8 @@ DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `GetStockReport`()
 BEGIN
 DECLARE EXIT HANDLER FOR SQLEXCEPTION SELECT 'error' as status,'Unable To Find Stock Details' as message;
-select sobj.productId,pobj.productName,cobj.categoryName,
-sobj.quantityAvailable as quantityAvailable,
-max(phistoryobj.purchaseTimeStamp) as lastPurchased,
-sum(phistoryobj.quantityPurchased) as quantityPurchased
-from stock  sobj 
-join product pobj on sobj.productId = pobj.productId
-join category cobj on pobj.categoryId= cobj.categoryId 
-join purchase_history phistoryobj on sobj.productId = phistoryobj.productId
-where sobj.isActive=1;
+select * from stock s join product p on s.productId=p.productId 
+join category c on p.categoryId=c.categoryId ;
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -1466,51 +1643,71 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `ManageOutstandings`(In _dealerId int(11),In _balance int(11),In _transcationType varchar(255))
+CREATE DEFINER=`root`@`localhost` PROCEDURE `ManageOutstandings`(In _dealerId int(11),In _outstandingAmount int(11),In _transcationType varchar(255))
 BEGIN
-Declare _credit decimal(10,4);
-Declare _debit decimal(10,4);
-declare _remainingAmount decimal(10,4);
 /*DECLARE EXIT HANDLER FOR SQLEXCEPTION SELECT 'error' as status,'Cannot Manage Outstandings' as message;*/
-SELECT 
-    credit
-INTO _credit FROM
-    outstanding
-WHERE
-    dealerId = _dealerId;
-SELECT 
-    debit
-INTO _debit FROM
-    outstanding
-WHERE
-    dealerId = _dealerId;
-if(_transactionType='debit') then 
-if(_credit>0) then 
-set _remainingAmount = _credit - _balance;
-if(_remainingAmount<0) then 
-update outstandings set debit = debit + abs(_remainingAmount);
-UPDATE outstandings 
-SET 
-    credit = 0;
+if(_transcationType='Recieve') then
+update outstanding set outstandingAmount = outstandingAmount + _outstandingAmount where
+dealerId=_dealerId;
 else
-update outstandings set credit = _remainingAmount where dealerId=_delareId;
+update outstanding set outstandingAmount = outstandingAmount - _outstandingAmount where
+dealerId=_dealerId;
 end if;
-else 
-update outstandings set debit = _debit + _balance where dealerId= _dealerID;
+SELECT 'success' AS status, 'Outstandings Updated Succesfully' AS message;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `ManagePurchaseAvailability` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `ManagePurchaseAvailability`(In _purchaseProductId int(11),
+In _quantity int(11),In _operation varchar(255)
+)
+BEGIN
+if(_operation='Subtract') then 
+update purchase_product set availability = availability - _quantity
+where purchase_productId = _purchaseProductId;
+end if;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `ManageStock` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `ManageStock`(_productId int (11),_quantity int(11),
+_type varchar(255),_transactionType varchar(255))
+BEGIN
+if(_transactionType='Add') then
+if(_type='Black') then
+update  stock set quantityBlack=quantityBlack + _quantity;
+else
+update stock set quantity=quantity + _quantity;
 end if;
 else
-if(_debit>0) then 
-set _remainingAmount = _debit - _balance;
-if(_remainingAmount<0) then 
-update outstandings set credit = credit + abs(_remainingAmount);
-UPDATE outstandings 
-SET 
-    debit = 0;
+if(_type='Black') then
+update  stock set quantityBlack=quantityBlack - _quantity;
 else
-update  outstanding set debit = _remainingAmount where dealerId=_delareId;
-end if;
-else 
-update outstandings set credit = _credit + _balance where dealerId= _dealerID;
+update stock set quantity=quantity - _quantity;
 end if;
 end if;
 END ;;
@@ -1559,4 +1756,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-03-27 20:12:40
+-- Dump completed on 2019-04-04 20:46:07
